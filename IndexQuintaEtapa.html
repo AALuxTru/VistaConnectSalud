@@ -9,45 +9,81 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        heading: ['Nunito', 'sans-serif'],
-                    },
-                    colors: {
-                        brand: {
-                            blue: '#0284c7', 
-                            cyan: '#06b6d4', 
-                            green: '#10b981', 
-                            light: '#f0fdfa' 
-                        }
+    // 1. Configuración de diseño (Tailwind)
+    tailwind.config = {
+        theme: {
+            extend: {
+                fontFamily: {
+                    sans: ['Inter', 'sans-serif'],
+                    heading: ['Nunito', 'sans-serif'],
+                },
+                colors: {
+                    brand: {
+                        blue: '#0284c7', 
+                        cyan: '#06b6d4', 
+                        green: '#10b981', 
+                        light: '#f0fdfa' 
                     }
                 }
             }
         }
+    }
 
-        function toggleDonationModal() {
-            const modal = document.getElementById('donationModal');
-            modal.classList.toggle('hidden');
-            modal.classList.toggle('flex');
-        }
+    // 2. Configuración de Conexión (Backend)
+    // REEMPLAZA ESTA URL cuando Render te dé la tuya
+    const BACKEND_URL = "https://tu-app-en-render.onrender.com"; 
 
-        function showPayment(method) {
-            document.querySelectorAll('.payment-section').forEach(el => el.classList.add('hidden'));
-            document.getElementById(`${method}Section`).classList.remove('hidden');
-            
-            // Highlight selected button
-            document.querySelectorAll('.pay-btn').forEach(el => el.classList.remove('ring-4', 'ring-brand-blue', 'bg-blue-50'));
-            document.getElementById(`btn-${method}`).classList.add('ring-4', 'ring-brand-blue', 'bg-blue-50');
-        }
+    // 3. Funciones de la Interfaz (Abrir modal y cambiar métodos de pago)
+    function toggleDonationModal() {
+        const modal = document.getElementById('donationModal');
+        modal.classList.toggle('hidden');
+        modal.classList.toggle('flex');
+    }
 
-        body: JSON.stringify({ 
-  amount: document.getElementById('donationAmount').value 
-})
+    function showPayment(method) {
+        document.querySelectorAll('.payment-section').forEach(el => el.classList.add('hidden'));
+        document.getElementById(`${method}Section`).classList.remove('hidden');
         
-    </script>
+        document.querySelectorAll('.pay-btn').forEach(el => el.classList.remove('ring-4', 'ring-brand-blue', 'bg-blue-50'));
+        document.getElementById(`btn-${method}`).classList.add('ring-4', 'ring-brand-blue', 'bg-blue-50');
+    }
+
+    // 4. Lógica para enviar el Formulario de Contacto al servidor
+    document.addEventListener('DOMContentLoaded', () => {
+        const contactForm = document.getElementById('contactForm');
+        if (contactForm) {
+            contactForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const formData = {
+                    fullName: document.getElementById('fullName').value,
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value,
+                    message: document.getElementById('message').value
+                };
+
+                try {
+                    const response = await fetch(`${BACKEND_URL}/api/contact`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData)
+                    });
+
+                    if (response.ok) {
+                        alert("¡Mensaje enviado con éxito! Nos pondremos en contacto pronto.");
+                        contactForm.reset();
+                    } else {
+                        alert("Hubo un problema con el servidor. Inténtalo más tarde.");
+                    }
+                } catch (error) {
+                    console.error("Error:", error);
+                    alert("No se pudo conectar con el servidor. Verifica tu conexión.");
+                }
+            });
+        }
+    });
+</script>
+    
 </head>
 <body class="text-slate-700 bg-white antialiased selection:bg-brand-cyan selection:text-white scroll-smooth">
 
