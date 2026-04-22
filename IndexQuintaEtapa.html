@@ -42,6 +42,10 @@
             document.querySelectorAll('.pay-btn').forEach(el => el.classList.remove('ring-4', 'ring-brand-blue', 'bg-blue-50'));
             document.getElementById(`btn-${method}`).classList.add('ring-4', 'ring-brand-blue', 'bg-blue-50');
         }
+
+        body: JSON.stringify({ 
+  amount: document.getElementById('donationAmount').value 
+})
         
     </script>
 </head>
