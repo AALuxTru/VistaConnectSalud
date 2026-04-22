@@ -175,25 +175,38 @@
 </head>
 <body class="text-slate-700 bg-white antialiased scroll-smooth">
 
-    <nav class="bg-white sticky top-0 z-50 shadow-sm border-b border-gray-100">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-24"> 
-                <a href="#" class="flex-shrink-0">
-                    <img class="h-16 w-auto object-contain" src="DIGITAL USE - Transparent Background.png" alt="Connection Salud Network">
-                </a>
-                <div class="hidden lg:flex items-center space-x-6 font-medium text-sm">
-                    <a href="#about" class="text-slate-600 hover:text-brand-blue transition">About Us</a>
-                    <a href="#programs" class="text-slate-600 hover:text-brand-blue transition">Future Programs</a>
-                    <a href="#resources" class="text-slate-600 hover:text-brand-blue transition">Resources</a>
-                    <a href="#stories" class="text-slate-600 hover:text-brand-blue transition">Stories</a>
-                    <a href="#contact" class="text-slate-600 hover:text-brand-blue transition">Contact</a>
-                    <button onclick="toggleDonationModal()" class="bg-brand-green hover:bg-emerald-600 text-white px-6 py-2.5 rounded-full font-bold transition shadow-md">
-                        Donate
-                    </button>
-                </div>
+    <nav class="sticky top-0 z-50 bg-white/95 backdrop-blur shadow-sm border-b border-slate-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center py-4">
+            
+            <a href="#" class="flex items-center gap-3">
+                <img class="h-20 md:h-28 w-auto object-contain transition-all" src="DIGITAL USE - Transparent Background.png" alt="Connection Salud Network">
+            </a>
+
+            <button id="mobile-menu-btn" class="md:hidden text-slate-600 hover:text-brand-blue focus:outline-none p-2">
+                <i class="fa-solid fa-bars text-3xl"></i>
+            </button>
+
+            <div class="hidden md:flex items-center gap-8">
+                <a href="#about" class="text-slate-600 font-medium hover:text-brand-blue transition">About Us</a>
+                <a href="#programs" class="text-slate-600 font-medium hover:text-brand-blue transition">Future Programs</a>
+                <a href="#resources" class="text-slate-600 font-medium hover:text-brand-blue transition">Resources</a>
+                <a href="#stories" class="text-slate-600 font-medium hover:text-brand-blue transition">Stories</a>
+                <a href="#contact" class="text-slate-600 font-medium hover:text-brand-blue transition">Contact</a>
+                <button onclick="document.getElementById('donation-modal').classList.remove('hidden')" class="bg-brand-blue text-white px-6 py-2.5 rounded-full font-bold hover:bg-sky-700 transition shadow-lg shadow-sky-200">Donate</button>
             </div>
         </div>
-    </nav>
+
+        <div id="mobile-menu" class="hidden md:hidden flex-col gap-4 pb-6 pt-2 border-t border-slate-100">
+            <a href="#about" class="text-slate-600 font-medium hover:text-brand-blue transition block">About Us</a>
+            <a href="#programs" class="text-slate-600 font-medium hover:text-brand-blue transition block">Future Programs</a>
+            <a href="#resources" class="text-slate-600 font-medium hover:text-brand-blue transition block">Resources</a>
+            <a href="#stories" class="text-slate-600 font-medium hover:text-brand-blue transition block">Stories</a>
+            <a href="#contact" class="text-slate-600 font-medium hover:text-brand-blue transition block">Contact</a>
+            <button onclick="document.getElementById('donation-modal').classList.remove('hidden')" class="bg-brand-blue text-white px-6 py-3 rounded-full font-bold w-full mt-2">Donate</button>
+        </div>
+    </div>
+</nav>
 
     <section class="relative bg-brand-light pt-20 pb-32 overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -470,9 +483,15 @@
             </div>
         </div>
     </div>
+<script>
+    // Lógica para abrir/cerrar el menú de hamburguesa en celulares
+    const mobileBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
 
-</body>
-</html>
-
+    mobileBtn.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+        mobileMenu.classList.toggle('flex');
+    });
+</script>
 </body>
 </html>
