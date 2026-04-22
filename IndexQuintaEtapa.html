@@ -9,81 +9,82 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script>
-    // 1. Configuración de diseño (Tailwind)
-    tailwind.config = {
-        theme: {
-            extend: {
-                fontFamily: {
-                    sans: ['Inter', 'sans-serif'],
-                    heading: ['Nunito', 'sans-serif'],
-                },
-                colors: {
-                    brand: {
-                        blue: '#0284c7', 
-                        cyan: '#06b6d4', 
-                        green: '#10b981', 
-                        light: '#f0fdfa' 
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Nunito', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            blue: '#0284c7', 
+                            cyan: '#06b6d4', 
+                            green: '#10b981', 
+                            light: '#f0fdfa' 
+                        }
                     }
                 }
             }
         }
-    }
 
-    // 2. Configuración de Conexión (Backend)
-    // REEMPLAZA ESTA URL cuando Render te dé la tuya
-    const BACKEND_URL = "https://tu-app-en-render.onrender.com"; 
+        const BACKEND_URL = "https://tu-app-en-render.onrender.com"; 
 
-    // 3. Funciones de la Interfaz (Abrir modal y cambiar métodos de pago)
-    function toggleDonationModal() {
-        const modal = document.getElementById('donationModal');
-        modal.classList.toggle('hidden');
-        modal.classList.toggle('flex');
-    }
-
-    function showPayment(method) {
-        document.querySelectorAll('.payment-section').forEach(el => el.classList.add('hidden'));
-        document.getElementById(`${method}Section`).classList.remove('hidden');
-        
-        document.querySelectorAll('.pay-btn').forEach(el => el.classList.remove('ring-4', 'ring-brand-blue', 'bg-blue-50'));
-        document.getElementById(`btn-${method}`).classList.add('ring-4', 'ring-brand-blue', 'bg-blue-50');
-    }
-
-    // 4. Lógica para enviar el Formulario de Contacto al servidor
-    document.addEventListener('DOMContentLoaded', () => {
-        const contactForm = document.getElementById('contactForm');
-        if (contactForm) {
-            contactForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                
-                const formData = {
-                    fullName: document.getElementById('fullName').value,
-                    email: document.getElementById('email').value,
-                    phone: document.getElementById('phone').value,
-                    message: document.getElementById('message').value
-                };
-
-                try {
-                    const response = await fetch(`${BACKEND_URL}/api/contact`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(formData)
-                    });
-
-                    if (response.ok) {
-                        alert("¡Mensaje enviado con éxito! Nos pondremos en contacto pronto.");
-                        contactForm.reset();
-                    } else {
-                        alert("Hubo un problema con el servidor. Inténtalo más tarde.");
-                    }
-                } catch (error) {
-                    console.error("Error:", error);
-                    alert("No se pudo conectar con el servidor. Verifica tu conexión.");
-                }
-            });
+        function toggleDonationModal() {
+            const modal = document.getElementById('donationModal');
+            modal.classList.toggle('hidden');
+            modal.classList.toggle('flex');
         }
-    });
-</script>
-    
+
+        function showPayment(method) {
+            document.querySelectorAll('.payment-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`${method}Section`).classList.remove('hidden');
+            
+            document.querySelectorAll('.pay-btn').forEach(el => el.classList.remove('ring-4', 'ring-brand-blue', 'bg-blue-50'));
+            document.getElementById(`btn-${method}`).classList.add('ring-4', 'ring-brand-blue', 'bg-blue-50');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const contactForm = document.getElementById('contactForm');
+            if (contactForm) {
+                contactForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const formData = {
+                        fullName: document.getElementById('fullName').value,
+                        email: document.getElementById('email').value,
+                        phone: document.getElementById('phone').value,
+                        message: document.getElementById('message').value
+                    };
+
+                    try {
+                        const response = await fetch(`${BACKEND_URL}/api/contact`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(formData)
+                        });
+                        if (response.ok) {
+                            alert("¡Mensaje enviado con éxito!");
+                            contactForm.reset();
+                        }
+                    } catch (error) {
+                        alert("Error al enviar el mensaje.");
+                    }
+                });
+            }
+        });
+
+        async function handlePayPal() {
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/paypal/create-order`, { method: 'POST' });
+                const order = await response.json();
+                if (order.links) {
+                    window.location.href = order.links.find(l => l.rel === 'approve').href;
+                }
+            } catch (e) {
+                alert("Error al conectar con PayPal");
+            }
+        }
+    </script>
 </head>
 <body class="text-slate-700 bg-white antialiased selection:bg-brand-cyan selection:text-white scroll-smooth">
 
@@ -102,14 +103,15 @@
 
     <nav class="bg-white sticky top-0 z-50 shadow-sm border-b border-gray-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-32"> <a href="#" class="flex-shrink-0">
+            <div class="flex justify-between items-center h-32"> 
+                <a href="#" class="flex-shrink-0">
                     <img class="h-40 md:h-48 w-auto object-contain" src="DIGITAL USE - Transparent Background.png" alt="Connection Salud Network">
                 </a>
                 <div class="hidden md:flex items-center space-x-8 font-medium">
                     <a href="#about" class="text-slate-600 hover:text-brand-blue transition">About Us</a>
                     <a href="#programs" class="text-slate-600 hover:text-brand-blue transition">Programs</a>
                     <a href="#resources" class="text-slate-600 hover:text-brand-blue transition">Resources</a>
-                    <button onclick="toggleDonationModal()" class="bg-brand-green hover:bg-emerald-600 text-white px-8 py-3 rounded-full font-bold transition shadow-md hover:shadow-lg flex items-center">
+                    <button onclick="toggleDonationModal()" class="bg-brand-green hover:bg-emerald-600 text-white px-8 py-3 rounded-full font-bold transition shadow-md flex items-center">
                         <i class="fa-solid fa-heart mr-2"></i> Donate
                     </button>
                 </div>
@@ -118,107 +120,70 @@
     </nav>
 
     <section id="about" class="bg-brand-light py-20 lg:py-32 relative overflow-hidden">
-        <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 rounded-full bg-cyan-100 opacity-50 blur-3xl"></div>
-        <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 rounded-full bg-blue-100 opacity-50 blur-3xl"></div>
-        
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-            <span class="inline-block py-1 px-3 rounded-full bg-blue-100 text-brand-blue font-bold tracking-wide text-sm mb-6 border border-blue-200">
-                A New Nonprofit Organization
-            </span>
-            <h1 class="font-heading text-4xl md:text-6xl font-extrabold text-slate-900 tracking-tight mb-6 max-w-4xl mx-auto leading-tight">
-                Connecting Communities to Health, Knowledge, and Opportunity
-            </h1>
-            <p class="mt-4 max-w-2xl text-lg md:text-xl text-slate-600 mx-auto mb-10 leading-relaxed">
-                We are dedicated to expanding access to prevention services, health education, and essential resources. Together, we are building a future where every individual has the support they need to thrive.
-            </p>
+            <span class="inline-block py-1 px-3 rounded-full bg-blue-100 text-brand-blue font-bold tracking-wide text-sm mb-6 border border-blue-200">A New Nonprofit Organization</span>
+            <h1 class="font-heading text-4xl md:text-6xl font-extrabold text-slate-900 tracking-tight mb-6 max-w-4xl mx-auto leading-tight">Connecting Communities to Health, Knowledge, and Opportunity</h1>
+            <p class="mt-4 max-w-2xl text-lg md:text-xl text-slate-600 mx-auto mb-10 leading-relaxed">We are dedicated to expanding access to prevention services, health education, and essential resources.</p>
             <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-                <a href="#programs" class="bg-brand-blue text-white px-8 py-4 rounded-full font-bold hover:bg-blue-700 transition shadow-lg">
-                    Discover Our Programs
-                </a>
-                <a href="#contact" class="bg-white text-brand-blue border-2 border-brand-blue px-8 py-4 rounded-full font-bold hover:bg-blue-50 transition">
-                    Request Information
-                </a>
+                <a href="#programs" class="bg-brand-blue text-white px-8 py-4 rounded-full font-bold hover:bg-blue-700 transition shadow-lg">Discover Our Programs</a>
+                <a href="#contact" class="bg-white text-brand-blue border-2 border-brand-blue px-8 py-4 rounded-full font-bold hover:bg-blue-50 transition">Request Information</a>
             </div>
         </div>
     </section>
 
     <section id="programs" class="py-24 bg-white">
-        <div id="resources" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-3xl mx-auto mb-16">
                 <h2 class="font-heading text-3xl md:text-4xl font-bold text-slate-900 mb-4">Future Programs & Services</h2>
-                <p class="text-slate-600 text-lg">We are actively developing a range of programs that will launch in phases. Each initiative is designed to reduce barriers, increase access, and support healthier communities.</p>
+                <p class="text-slate-600 text-lg">We are actively developing a range of programs that will launch in phases.</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <div class="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative overflow-hidden group">
+                <div class="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative overflow-hidden group">
                     <div class="absolute top-0 left-0 w-full h-1 bg-brand-cyan"></div>
-                    <div class="w-14 h-14 bg-cyan-50 rounded-2xl flex items-center justify-center text-brand-cyan text-2xl mb-6 group-hover:scale-110 transition-transform">
-                        <i class="fa-solid fa-ribbon"></i>
-                    </div>
-                    <div class="flex items-start justify-between mb-3">
-                        <h3 class="font-heading text-xl font-bold text-slate-900">Sexual Health</h3>
-                    </div>
-                    <p class="text-slate-600 leading-relaxed mb-4">Empowering individuals with clear, accurate, and culturally responsive information for healthy communities.</p>
+                    <div class="w-14 h-14 bg-cyan-50 rounded-2xl flex items-center justify-center text-brand-cyan text-2xl mb-6"><i class="fa-solid fa-ribbon"></i></div>
+                    <h3 class="font-heading text-xl font-bold text-slate-900 mb-3">Sexual Health</h3>
+                    <p class="text-slate-600 leading-relaxed">Empowering individuals with clear, accurate, and culturally responsive information.</p>
                 </div>
 
-                <div class="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative overflow-hidden group">
+                <div class="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative overflow-hidden group">
                     <div class="absolute top-0 left-0 w-full h-1 bg-brand-blue"></div>
-                    <div class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-brand-blue text-2xl mb-6 group-hover:scale-110 transition-transform">
-                        <i class="fa-solid fa-vial"></i>
-                    </div>
-                    <div class="flex flex-col items-start mb-3">
-                        <span class="bg-amber-100 text-amber-800 text-[10px] font-bold uppercase tracking-wider py-1 px-2 rounded-md mb-2">Coming Soon</span>
-                        <h3 class="font-heading text-xl font-bold text-slate-900">Rapid Testing Services</h3>
-                    </div>
-                    <p class="text-slate-600 leading-relaxed mb-4">Confidential, fast, and accessible rapid testing services delivered in a respectful, stigma-free environment.</p>
+                    <div class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-brand-blue text-2xl mb-6"><i class="fa-solid fa-vial"></i></div>
+                    <span class="bg-amber-100 text-amber-800 text-[10px] font-bold uppercase py-1 px-2 rounded-md mb-2 inline-block">Coming Soon</span>
+                    <h3 class="font-heading text-xl font-bold text-slate-900 mb-3">Rapid Testing Services</h3>
+                    <p class="text-slate-600 leading-relaxed">Confidential, fast, and accessible rapid testing services in a stigma-free environment.</p>
                 </div>
 
-                <div class="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative overflow-hidden group">
+                <div class="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative overflow-hidden group">
                     <div class="absolute top-0 left-0 w-full h-1 bg-brand-green"></div>
-                    <div class="w-14 h-14 bg-green-50 rounded-2xl flex items-center justify-center text-brand-green text-2xl mb-6 group-hover:scale-110 transition-transform">
-                        <i class="fa-solid fa-hand-holding-medical"></i>
-                    </div>
-                    <div class="flex flex-col items-start mb-3">
-                        <span class="bg-amber-100 text-amber-800 text-[10px] font-bold uppercase tracking-wider py-1 px-2 rounded-md mb-2">Coming Soon</span>
-                        <h3 class="font-heading text-xl font-bold text-slate-900">Linkage to Care</h3>
-                    </div>
-                    <p class="text-slate-600 leading-relaxed mb-4">Helping individuals navigate the healthcare system to access primary care, behavioral health, and social services.</p>
+                    <div class="w-14 h-14 bg-green-50 rounded-2xl flex items-center justify-center text-brand-green text-2xl mb-6"><i class="fa-solid fa-hand-holding-medical"></i></div>
+                    <span class="bg-amber-100 text-amber-800 text-[10px] font-bold uppercase py-1 px-2 rounded-md mb-2 inline-block">Coming Soon</span>
+                    <h3 class="font-heading text-xl font-bold text-slate-900 mb-3">Linkage to Care</h3>
+                    <p class="text-slate-600 leading-relaxed">Helping individuals navigate the healthcare system to access primary care and social services.</p>
                 </div>
 
-                <div class="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative overflow-hidden group">
+                <div class="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative overflow-hidden group">
                     <div class="absolute top-0 left-0 w-full h-1 bg-purple-500"></div>
-                    <div class="w-14 h-14 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-500 text-2xl mb-6 group-hover:scale-110 transition-transform">
-                        <i class="fa-solid fa-brain"></i>
-                    </div>
-                    <div class="flex flex-col items-start mb-3">
-                        <span class="bg-amber-100 text-amber-800 text-[10px] font-bold uppercase tracking-wider py-1 px-2 rounded-md mb-2">Coming Soon</span>
-                        <h3 class="font-heading text-xl font-bold text-slate-900">Mental Health Support</h3>
-                    </div>
-                    <p class="text-slate-600 leading-relaxed mb-4">Stress management, peer support, and wellness groups centering compassion and cultural sensitivity.</p>
+                    <div class="w-14 h-14 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-500 text-2xl mb-6"><i class="fa-solid fa-brain"></i></div>
+                    <span class="bg-amber-100 text-amber-800 text-[10px] font-bold uppercase py-1 px-2 rounded-md mb-2 inline-block">Coming Soon</span>
+                    <h3 class="font-heading text-xl font-bold text-slate-900 mb-3">Mental Health Support</h3>
+                    <p class="text-slate-600 leading-relaxed">Stress management, peer support, and wellness groups centering compassion.</p>
                 </div>
 
-                <div class="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative overflow-hidden group">
+                <div id="resources" class="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative overflow-hidden group">
                     <div class="absolute top-0 left-0 w-full h-1 bg-slate-800"></div>
-                    <div class="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center text-slate-800 text-2xl mb-6 group-hover:scale-110 transition-transform">
-                        <i class="fa-solid fa-medal"></i>
-                    </div>
-                    <div class="flex flex-col items-start mb-3">
-                        <span class="bg-gray-200 text-gray-700 text-[10px] font-bold uppercase tracking-wider py-1 px-2 rounded-md mb-2">Future Initiative</span>
-                        <h3 class="font-heading text-xl font-bold text-slate-900">Veteran Services</h3>
-                    </div>
-                    <p class="text-slate-600 leading-relaxed mb-4">Specialized support focusing on wellness, reintegration, and community connection for those who served.</p>
+                    <div class="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center text-slate-800 text-2xl mb-6"><i class="fa-solid fa-medal"></i></div>
+                    <span class="bg-gray-200 text-gray-700 text-[10px] font-bold uppercase py-1 px-2 rounded-md mb-2 inline-block">Future Initiative</span>
+                    <h3 class="font-heading text-xl font-bold text-slate-900 mb-3">Veteran Services</h3>
+                    <p class="text-slate-600 leading-relaxed">Specialized support focusing on wellness and reintegration for those who served.</p>
                 </div>
 
-                <div class="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative overflow-hidden group">
+                <div class="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-xl transition-all relative overflow-hidden group">
                     <div class="absolute top-0 left-0 w-full h-1 bg-brand-cyan"></div>
-                    <div class="w-14 h-14 bg-cyan-50 rounded-2xl flex items-center justify-center text-brand-cyan text-2xl mb-6 group-hover:scale-110 transition-transform">
-                        <i class="fa-solid fa-people-group"></i>
-                    </div>
-                    <div class="flex flex-col items-start mb-3">
-                        <span class="bg-amber-100 text-amber-800 text-[10px] font-bold uppercase tracking-wider py-1 px-2 rounded-md mb-2">Coming Soon</span>
-                        <h3 class="font-heading text-xl font-bold text-slate-900">Community Outreach</h3>
-                    </div>
-                    <p class="text-slate-600 leading-relaxed mb-4">Building strong relationships to identify needs, expand access, and promote health equity in neighborhoods.</p>
+                    <div class="w-14 h-14 bg-cyan-50 rounded-2xl flex items-center justify-center text-brand-cyan text-2xl mb-6"><i class="fa-solid fa-people-group"></i></div>
+                    <span class="bg-amber-100 text-amber-800 text-[10px] font-bold uppercase py-1 px-2 rounded-md mb-2 inline-block">Coming Soon</span>
+                    <h3 class="font-heading text-xl font-bold text-slate-900 mb-3">Community Outreach</h3>
+                    <p class="text-slate-600 leading-relaxed">Building strong relationships to identify needs and promote health equity.</p>
                 </div>
             </div>
         </div>
@@ -229,48 +194,42 @@
             <div class="bg-white rounded-3xl shadow-lg overflow-hidden flex flex-col md:flex-row">
                 <div class="bg-brand-blue text-white p-10 md:w-2/5 flex flex-col justify-center">
                     <h2 class="font-heading text-3xl font-bold mb-4">Stay Connected</h2>
-                    <p class="text-blue-100 mb-8 text-sm">Be the first to know when our programs launch. We welcome questions and partnership inquiries.</p>
+                    <p class="text-blue-100 mb-8 text-sm">Be the first to know when our programs launch.</p>
                     <div class="space-y-4 text-sm">
                         <p class="flex items-center"><i class="fa-solid fa-envelope mr-3 text-brand-cyan"></i> Info@connectionsalud.org</p>
-                        <p class="flex items-center"><i class="fa-solid fa-phone mr-3 text-brand-cyan"></i> Pending Setup</p>
-                        <p class="flex items-center"><i class="fa-solid fa-location-dot mr-3 text-brand-cyan"></i> Administrative Office</p>
                     </div>
                 </div>
                 
                 <div class="p-10 md:w-3/5">
-                    <form id="contactForm" action="/api/contact" method="POST" class="space-y-5">
+                    <form id="contactForm" class="space-y-5">
                         <div>
-                            <label for="fullName" class="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
-                            <input type="text" id="fullName" name="fullName" required class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-blue focus:bg-white transition">
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
+                            <input type="text" id="fullName" required class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-brand-blue outline-none transition">
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div>
-                                <label for="email" class="block text-sm font-medium text-slate-700 mb-1">Email</label>
-                                <input type="email" id="email" name="email" required class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-blue focus:bg-white transition">
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Email</label>
+                                <input type="email" id="email" required class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-brand-blue outline-none transition">
                             </div>
                             <div>
-                                <label for="phone" class="block text-sm font-medium text-slate-700 mb-1">Phone <span class="text-slate-400 font-normal">(Optional)</span></label>
-                                <input type="tel" id="phone" name="phone" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-blue focus:bg-white transition">
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Phone</label>
+                                <input type="tel" id="phone" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-brand-blue outline-none transition">
                             </div>
                         </div>
                         <div>
-                            <label for="message" class="block text-sm font-medium text-slate-700 mb-1">Message</label>
-                            <textarea id="message" name="message" required rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-blue focus:bg-white transition"></textarea>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Message</label>
+                            <textarea id="message" required rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-brand-blue outline-none transition"></textarea>
                         </div>
                         
                         <div class="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start mt-2">
-                            <div class="flex items-center h-5 mt-1">
-                                <input type="checkbox" id="medicalDisclaimer" name="medicalDisclaimer" required class="w-5 h-5 text-red-600 border-gray-300 rounded focus:ring-red-500 cursor-pointer">
-                            </div>
+                            <input type="checkbox" id="medicalDisclaimer" required class="w-5 h-5 mt-1 text-red-600 cursor-pointer">
                             <div class="ml-3 text-sm">
                                 <label for="medicalDisclaimer" class="font-bold text-red-800 cursor-pointer">Required Confirmation</label>
-                                <p class="text-red-600 mt-1">I confirm that I will <strong class="underline">not</strong> include medical or health information in this message. This form is not intended for emergencies.</p>
+                                <p class="text-red-600">I confirm that I will <strong class="underline">not</strong> include medical or health information in this message.</p>
                             </div>
                         </div>
 
-                        <button type="submit" class="w-full bg-brand-cyan text-white font-bold rounded-lg px-4 py-4 hover:bg-cyan-600 transition shadow-md mt-4">
-                            Submit Request
-                        </button>
+                        <button type="submit" class="w-full bg-brand-cyan text-white font-bold rounded-lg px-4 py-4 hover:bg-cyan-600 transition shadow-md">Submit Request</button>
                     </form>
                 </div>
             </div>
@@ -279,85 +238,77 @@
 
     <div id="donationModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] items-center justify-center p-4">
         <div class="bg-white w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden relative flex flex-col md:flex-row">
-            <button onclick="toggleDonationModal()" class="absolute top-4 right-4 text-2xl text-slate-400 hover:text-slate-800 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-sm">&times;</button>
-            
+            <button onclick="toggleDonationModal()" class="absolute top-4 right-4 text-2xl text-slate-400 hover:text-slate-800 transition-colors">&times;</button>
             <div class="bg-brand-light p-8 md:w-2/5 border-r border-cyan-100 flex flex-col justify-center">
-                <div class="w-16 h-16 bg-brand-cyan rounded-full flex items-center justify-center text-white text-2xl mb-6 shadow-md">
-                    <i class="fa-solid fa-hand-holding-heart"></i>
-                </div>
                 <h3 class="font-heading text-2xl font-bold text-slate-900 mb-4">Support Our Mission</h3>
-                <p class="text-slate-600 text-sm leading-relaxed">As a new organization, your support helps us build the foundation for programs that will serve our community for years to come.</p>
+                <p class="text-slate-600 text-sm">Your support helps us build the foundation for programs that will serve our community.</p>
             </div>
 
-            <div class="p-8 md:w-3/5">
+            <div class="p-8 md:w-3/5 max-h-[90vh] overflow-y-auto">
                 <h4 class="font-bold text-slate-800 mb-4">Select Payment Method</h4>
                 <div class="grid grid-cols-2 gap-3 mb-8">
-                    <button id="btn-card" onclick="showPayment('card')" class="pay-btn ring-4 ring-brand-blue bg-blue-50 border border-slate-200 rounded-xl p-3 flex items-center justify-center transition">
-                        <i class="fa-solid fa-credit-card text-slate-700 mr-2"></i> Card
-                    </button>
-                    <button id="btn-paypal" onclick="showPayment('paypal')" class="pay-btn border border-slate-200 rounded-xl p-3 flex items-center justify-center hover:bg-slate-50 transition">
-                        <i class="fa-brands fa-paypal text-blue-700 mr-2"></i> PayPal
-                    </button>
-                    <button id="btn-zelle" onclick="showPayment('zelle')" class="pay-btn border border-slate-200 rounded-xl p-3 flex items-center justify-center hover:bg-slate-50 transition">
-                        <i class="fa-solid fa-bolt text-purple-600 mr-2"></i> Zelle
-                    </button>
-                    <button id="btn-gpay" onclick="showPayment('gpay')" class="pay-btn border border-slate-200 rounded-xl p-3 flex items-center justify-center hover:bg-slate-50 transition">
-                        <i class="fa-brands fa-google-pay text-slate-900 mr-2"></i> G-Pay
-                    </button>
+                    <button id="btn-card" onclick="showPayment('card')" class="pay-btn ring-4 ring-brand-blue bg-blue-50 border border-slate-200 rounded-xl p-3 flex items-center justify-center transition hover:bg-slate-50"><i class="fa-solid fa-credit-card mr-2"></i> Card</button>
+                    <button id="btn-paypal" onclick="showPayment('paypal'); handlePayPal()" class="pay-btn border border-slate-200 rounded-xl p-3 flex items-center justify-center transition hover:bg-slate-50"><i class="fa-brands fa-paypal text-blue-700 mr-2"></i> PayPal</button>
+                    <button id="btn-gpay" onclick="showPayment('gpay')" class="pay-btn border border-slate-200 rounded-xl p-3 flex items-center justify-center transition hover:bg-slate-50"><i class="fa-brands fa-google-pay text-2xl"></i></button>
+                    <button id="btn-zelle" onclick="showPayment('zelle')" class="pay-btn border border-slate-200 rounded-xl p-3 flex items-center justify-center transition hover:bg-slate-50"><i class="fa-solid fa-bolt text-purple-600 mr-2"></i> Zelle</button>
                 </div>
 
                 <div id="cardSection" class="payment-section">
-                    <form id="paymentForm" action="/api/donate" method="POST" class="space-y-4">
-                        <input type="text" id="cardName" name="cardName" required placeholder="Name on Card" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-sm">
-                        <input type="text" id="cardNumber" name="cardNumber" required placeholder="Card Number" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-sm">
-                        <div class="grid grid-cols-2 gap-4">
-                            <input type="text" id="cardExpiry" name="cardExpiry" required placeholder="MM/YY" class="bg-slate-50 border border-slate-200 rounded-lg p-3 text-sm">
-                            <input type="text" id="cardCvc" name="cardCvc" required placeholder="CVC" class="bg-slate-50 border border-slate-200 rounded-lg p-3 text-sm">
+                    <form class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Cardholder Name</label>
+                            <input type="text" placeholder="John Doe" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-sm outline-none focus:ring-2 focus:ring-brand-blue">
                         </div>
-                        <button type="submit" class="w-full bg-brand-green text-white font-bold rounded-lg py-4 shadow-md hover:bg-emerald-600 transition flex items-center justify-center">
-                            <i class="fa-solid fa-lock mr-2 text-sm"></i> Complete Donation
-                        </button>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Card Number</label>
+                            <div class="relative">
+                                <input type="text" placeholder="0000 0000 0000 0000" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-sm outline-none focus:ring-2 focus:ring-brand-blue pl-10">
+                                <i class="fa-solid fa-credit-card absolute left-3 top-3.5 text-slate-400"></i>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Expiration (MM/YY)</label>
+                                <input type="text" placeholder="MM/YY" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-sm outline-none focus:ring-2 focus:ring-brand-blue">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">CVV</label>
+                                <input type="text" placeholder="123" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-sm outline-none focus:ring-2 focus:ring-brand-blue">
+                            </div>
+                        </div>
+                        <button type="button" class="w-full bg-brand-green text-white font-bold rounded-lg py-4 hover:bg-emerald-600 transition shadow-md mt-2">Complete Donation</button>
                     </form>
                 </div>
 
                 <div id="paypalSection" class="payment-section hidden text-center py-8">
-                    <p class="text-sm text-slate-500 mb-6">You will be redirected to PayPal's secure checkout.</p>
-                    <button class="bg-[#FFC439] text-slate-900 font-bold rounded-full py-4 px-8 shadow-md hover:brightness-95 transition inline-flex items-center">
-                        <i class="fa-brands fa-paypal text-xl mr-2"></i> Checkout with PayPal
+                    <p class="text-sm text-slate-500 mb-6">Redirigiendo a PayPal seguro...</p>
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-blue mx-auto"></div>
+                </div>
+
+                <div id="gpaySection" class="payment-section hidden text-center py-8">
+                    <button type="button" class="bg-black text-white px-10 py-3 rounded-lg flex items-center mx-auto hover:bg-slate-800 transition">
+                        <i class="fa-brands fa-google-pay text-4xl"></i>
                     </button>
+                    <p class="text-xs text-slate-400 mt-4">Pay safely with your Google account</p>
                 </div>
 
                 <div id="zelleSection" class="payment-section hidden text-center py-8 bg-purple-50 rounded-2xl border border-purple-100">
                     <p class="text-sm font-bold text-purple-900 mb-2">Send Zelle donation to:</p>
-                    <p class="text-lg font-black text-purple-700 mb-4 select-all">donations@connectionsalud.org</p>
-                    <p class="text-xs text-purple-500">Connection Salud Network, Inc.</p>
-                </div>
-
-                <div id="gpaySection" class="payment-section hidden text-center py-8">
-                    <button class="bg-black text-white px-10 py-3 rounded-lg flex items-center mx-auto hover:bg-slate-800 transition">
-                        <i class="fa-brands fa-google-pay text-4xl"></i>
-                    </button>
+                    <p class="text-lg font-black text-purple-700 select-all">donations@connectionsalud.org</p>
+                    <p class="text-xs text-purple-400 mt-4 px-4">Please include "Donation" in the memo field.</p>
                 </div>
             </div>
         </div>
     </div>
 
     <footer class="bg-slate-900 text-slate-400 py-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
-            <div class="mb-8 md:mb-0 text-center md:text-left">
-                <img class="h-16 w-auto mx-auto md:mx-0 mb-6 grayscale opacity-70" src="DIGITAL USE - Transparent Background.png" alt="Logo">
-                <p class="text-sm max-w-sm">Promoting holistic wellbeing, health equity, and community empowerment.</p>
+        <div class="max-w-7xl mx-auto px-4 text-center md:text-left flex flex-col md:flex-row justify-between items-center">
+            <div class="mb-8 md:mb-0">
+                <img class="h-16 w-auto grayscale opacity-70 mb-6" src="DIGITAL USE - Transparent Background.png" alt="Logo">
+                <p class="text-sm max-w-sm">Promoting holistic wellbeing and community empowerment.</p>
             </div>
-            <div class="text-sm text-center md:text-right space-y-2">
-                <div class="space-x-4 mb-4">
-                    <a href="#" class="hover:text-white transition">Privacy Policy</a>
-                    <a href="#" class="hover:text-white transition">Terms of Use</a>
-                    <a href="#" class="hover:text-white transition">Accessibility</a>
-                </div>
-                <p>&copy; 2026 Connection Salud Network, Inc. All Rights Reserved.</p>
-            </div>
+            <p class="text-sm">&copy; 2026 Connection Salud Network, Inc. All Rights Reserved.</p>
         </div>
     </footer>
-
 </body>
 </html>
