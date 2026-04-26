@@ -222,8 +222,6 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
-      // Reemplaza G-XXXXXXXXXX con tu "ID de medición" real de Google Analytics Para obtener el código G-XXXXXXXXXX, debes crear una cuenta gratuita en analytics.google.com y registrar el dominio de la ONG
       gtag('config', 'G-XXXXXXXXXX');
     </script>
 </head>
@@ -231,34 +229,34 @@
 
     <nav class="relative z-50 bg-white shadow-sm border-b border-slate-100">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-29 md:h-29">
+        <div class="flex justify-between items-center py-3 md:py-6">
             
-            <div class="flex items-center h-full">
-                <a href="#" class="flex items-center h-full w-48 md:w-64">
-                    <img class="w-full scale-[1.5] md:scale-[2.0] origin-left" 
+            <div class="flex items-center">
+                <a href="#" class="flex items-center w-36 md:w-64">
+                    <img class="w-full scale-110 md:scale-[2.0] origin-left transition-transform" 
                     src="DIGITAL USE - Transparent Background.png" 
                     alt="Connection Salud Network">
                 </a>
             </div>
 
-            <div class="flex items-center gap-4 md:gap-8">
+            <div class="flex items-center gap-2 md:gap-8">
                 <div class="hidden md:flex items-center gap-8">
                     <a href="#about" class="text-slate-600 font-bold hover:text-brand-blue transition" data-es="Nosotros">About Us</a>
                     <a href="#programs" class="text-slate-600 font-bold hover:text-brand-blue transition" data-es="Programas">Future Programs</a>
                     <a href="#contact" class="text-slate-600 font-bold hover:text-brand-blue transition" data-es="Contacto">Contact</a>
                 </div>
 
-                <button onclick="toggleLanguage()" class="flex items-center gap-2 px-3 py-2 text-slate-600 font-bold border border-slate-200 rounded-xl hover:bg-slate-50">
+                <button onclick="toggleLanguage()" class="flex items-center gap-2 px-2 py-1 md:px-3 md:py-2 text-slate-600 font-bold border border-slate-200 rounded-xl hover:bg-slate-50 text-sm md:text-base">
                     <i class="fa-solid fa-globe text-brand-blue"></i>
                     <span id="lang-text">ES</span>
                 </button>
 
-                <button onclick="toggleDonationModal()" data-es="Donar" class="bg-brand-blue text-white px-6 py-3 rounded-full font-black shadow-lg hover:bg-blue-700 transition transform hover:-translate-y-0.5">
+                <button onclick="toggleDonationModal()" data-es="Donar" class="bg-brand-blue text-white px-4 md:px-6 py-2 md:py-3 text-sm md:text-base rounded-full font-black shadow-lg hover:bg-blue-700 transition transform hover:-translate-y-0.5">
                     Donate
                 </button>
                 
                 <button id="mobile-menu-btn" class="md:hidden text-slate-600 p-2">
-                    <i class="fa-solid fa-bars text-3xl"></i>
+                    <i class="fa-solid fa-bars text-2xl"></i>
                 </button>
             </div>
         </div>
@@ -295,7 +293,7 @@
         </div>
     </section>
 
-    <div class="max-w-4xl mx-auto px-4 text-center">
+    <div id="about" class="max-w-4xl mx-auto px-4 text-center mt-24">
     <h2 class="font-heading text-4xl font-bold text-slate-900 mb-8" data-es="Nuestro Comienzo">Our Beginning</h2>
     <div class="prose prose-lg text-slate-600 mx-auto leading-relaxed">
         <p class="mb-6 italic" data-es="&quot;Connection Salud Network, Inc. fue fundada con una creencia simple pero poderosa: que cada persona merece acceso al conocimiento, el apoyo y los recursos necesarios para vivir una vida saludable y empoderada.&quot;">
@@ -307,7 +305,7 @@
     </div>
 </div>
 
-<div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-16">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-8 mt-16">
     <div class="group relative p-8 rounded-[2rem] bg-white border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-blue-100/50 hover:-translate-y-2 transition-all duration-500 overflow-hidden">
         <div class="absolute -right-4 -top-4 w-24 h-24 bg-blue-50 rounded-full blur-2xl group-hover:bg-blue-100 transition-colors"></div>
         
@@ -349,7 +347,7 @@
     </div>
 </div>
 
-        <div class="max-w-7xl mx-auto px-4 mt-24">
+        <div class="max-w-7xl mx-auto px-4 mt-24 mb-24">
     <h3 class="text-center font-heading text-3xl font-bold mb-12" data-es="Nuestros Valores">Our Values</h3>
     <div class="flex flex-col gap-4 max-w-4xl mx-auto">
         <details class="group bg-white rounded-2xl border border-slate-200 shadow-sm p-6 cursor-pointer transition-all open:border-brand-blue open:shadow-md">
@@ -413,7 +411,6 @@
         </details>
     </div>
 </div>
-    </section>
 
     <section id="programs" class="py-24 bg-slate-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -515,7 +512,7 @@
 
     <section id="contact" class="py-24 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="bg-brand-blue rounded-[40px] p-8 md:p-16 text-white grid md:grid-cols-2 gap-12 items-center">
+            <div class="bg-brand-blue rounded-[30px] md:rounded-[40px] p-5 sm:p-8 md:p-16 text-white grid md:grid-cols-2 gap-8 md:gap-12 items-center">
     <div>
         <h2 class="font-heading text-4xl font-bold mb-6" data-es="Mantente Conectado">Stay Connected</h2>
         <p class="text-blue-100 text-lg mb-8 leading-relaxed" data-es="Sé el primero en saber cuándo lanzamos nuestros programas. Agradecemos preguntas, consultas de asociación y conexiones comunitarias.">
@@ -524,7 +521,7 @@
         <div class="space-y-4">
             <div class="flex items-center space-x-4">
                 <i class="fa-solid fa-envelope text-2xl text-brand-green"></i>
-                <span>Info@connectionsalud.org</span>
+                <span class="break-all">Info@connectionsalud.org</span>
             </div>
             <div class="flex items-center space-x-4">
                 <i class="fa-solid fa-triangle-exclamation text-brand-green"></i>
@@ -535,13 +532,13 @@
         </div>
     </div>
 
-                <div class="bg-white p-8 rounded-3xl text-slate-800 shadow-2xl">
+                <div class="bg-white p-5 sm:p-8 rounded-2xl md:rounded-3xl text-slate-800 shadow-2xl overflow-hidden">
     <form onsubmit="handleContactSubmit(event)" class="space-y-4">
         <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1" data-es="Nombre Completo">Full Name</label>
             <input type="text" id="contact-name" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-brand-blue outline-none transition">
         </div>
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1" data-es="Correo Electrónico">Email</label>
                 <input type="email" id="contact-email" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-brand-blue outline-none transition">
@@ -561,7 +558,7 @@
                 I confirm that I will not include medical or health information in this message. 
             </label>
         </div>
-        <div class="g-recaptcha mb-4 flex justify-center" data-sitekey="TU_CLAVE_DE_SITIO_PUBLICA"></div>
+        <div class="g-recaptcha mb-4 flex justify-center transform scale-[0.85] sm:scale-100 origin-center" data-sitekey="TU_CLAVE_DE_SITIO_PUBLICA"></div>
         <button type="submit" data-es="Solicitar Información" class="w-full bg-brand-green text-white font-bold py-4 rounded-xl shadow-lg hover:bg-emerald-600 transition">Request Information</button>
     </form>
 </div>
@@ -673,10 +670,12 @@
     const mobileBtn = document.getElementById('mobile-menu-btn');
     const mobileMenu = document.getElementById('mobile-menu');
 
-    mobileBtn.addEventListener('click', () => {
-        mobileMenu.classList.toggle('hidden');
-        mobileMenu.classList.toggle('flex');
-    });
+    if(mobileBtn && mobileMenu) {
+        mobileBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            mobileMenu.classList.toggle('flex');
+        });
+    }
 </script>
 </body>
 </html>
