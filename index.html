@@ -4,29 +4,77 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connection Salud Network | Community Health & Wellness</title>
+    <meta name="description" content="Connection Salud Network es una ONG dedicada a expandir el acceso a servicios de prevención, educación en salud y bienestar comunitario.">
+    <meta name="keywords" content="ONG, Salud, Prevención, Comunidad, Connection Salud, Bienestar, Educación Sexual">
+    <meta name="author" content="Connection Salud Network, Inc.">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.connectionsalud.org/">
+    <meta property="og:title" content="Connection Salud Network | Construyendo comunidades más saludables">
+    <meta property="og:description" content="Únete a nuestra misión. Brindamos servicios de prevención, educación en salud y recursos para poblaciones vulnerables.">
+    <meta property="og:image" content="https://tu-dominio.com/DIGITAL_USE_Transparent_Background.png">
+    <meta property="og:locale" content="es_ES">
+    <meta property="og:locale:alternate" content="en_US">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <script src="https://js.stripe.com/v3/"></script>
     <script src="https://www.paypal.com/sdk/js?client-id=AdIp1zcPbNTVYJ7knccTwLyqKIqVtEz6c0xbuwbnJeHBIpYUfWIrw-Z0TKWimPF3aR-vPY9AX24lZmd1&currency=USD&intent=capture"></script>
+
+    <style>
+        /* Corrección para que el acordeón de valores no muestre la flecha fea por defecto en algunos navegadores */
+        summary::-webkit-details-marker { display: none; }
+        summary { list-style: none; }
+    </style>
 
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: { sans: ['Inter', 'sans-serif'], heading: ['Nunito', 'sans-serif'] },
-                    colors: { brand: { blue: '#0284c7', cyan: '#06b6d4', green: '#10b981', light: '#f0fdfa' } }
-                }
-            }
-        }
+                    colors: { 
+                                brand: { 
+                                blue: '#003EDA',   /* Un Azul Eléctrico/Rey mucho más intenso y vibrante */
+                                cyan: '#0891b2', 
+                                green: '#059669',  
+                                light: '#e0f2fe'   /* Fondo azul cielo más llamativo (Tailwind sky-100) */
+                                        } 
+                            } 
+                        }
+                    }
+                        }
 
         const BACKEND_URL = "https://connectsaludmodulopruebas.onrender.com"; 
         const STRIPE_PUBLISHABLE_KEY = 'pk_test_TU_CLAVE_AQUI'; 
 
         let stripe, elements, cardElement;
+        let currentLang = 'en'; // Estado global del idioma
 
-        // Lógica visual para desactivar PayPal si seleccionan donación mensual
+        // --- SISTEMA BILINGÜE ---
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'es' : 'en';
+            
+            // Actualizar texto del botón en Nav
+            const langText = document.getElementById('lang-text');
+            if(langText) langText.innerText = currentLang === 'en' ? 'ES' : 'EN';
+
+            // Traducir elementos con atributo data-es
+            const elements = document.querySelectorAll('[data-es]');
+            elements.forEach(el => {
+                if (currentLang === 'es') {
+                    if (!el.hasAttribute('data-en')) el.setAttribute('data-en', el.innerHTML);
+                    el.innerHTML = el.getAttribute('data-es');
+                } else {
+                    el.innerHTML = el.getAttribute('data-en');
+                }
+            });
+        }
+
+        // --- LÓGICA DE DONACIONES Y MODAL ---
         document.addEventListener('DOMContentLoaded', () => {
             const typeRadios = document.querySelectorAll('input[name="donationType"]');
             typeRadios.forEach(radio => {
@@ -39,7 +87,6 @@
                     } else {
                         paypalBtn.style.opacity = '1';
                         paypalBtn.style.pointerEvents = 'auto';
-                        paypalBtn.title = "";
                     }
                 });
             });
@@ -59,17 +106,17 @@
             document.querySelectorAll('.payment-section').forEach(el => el.classList.add('hidden'));
             document.getElementById(`${method}Section`).classList.remove('hidden');
             document.querySelectorAll('.pay-btn').forEach(el => el.classList.remove('ring-4', 'ring-brand-blue', 'bg-blue-50'));
-            document.getElementById(`btn-${method}`).classList.add('ring-4', 'ring-brand-blue', 'bg-blue-50');
+            const activeBtn = document.getElementById(`btn-${method}`);
+            if(activeBtn) activeBtn.classList.add('ring-4', 'ring-brand-blue', 'bg-blue-50');
         }
 
         function initStripe() {
             stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
             elements = stripe.elements();
-            cardElement = elements.create('card', { style: { base: { fontSize: '16px', color: '#334155' } } });
+            cardElement = elements.create('card', { style: { base: { fontSize: '16px', color: '#1e293b' } } });
             cardElement.mount('#card-element');
         }
 
-        // Lógica de Stripe unificada y corregida
         async function handleStripePayment() {
             const amount = document.getElementById('donationAmount').value;
             const type = document.querySelector('input[name="donationType"]:checked').value;
@@ -87,28 +134,15 @@
                 const data = await response.json();
 
                 if (type === 'recurring') {
-                    // El backend devuelve una URL para suscripciones mensuales
-                    if (data.url) {
-                        window.location.href = data.url; 
-                    } else {
-                        alert("Error initializing subscription.");
-                    }
+                    if (data.url) { window.location.href = data.url; } 
+                    else { alert("Error initializing subscription."); }
                 } else {
-                    // Pago único usa el confirmCardPayment normal
                     const result = await stripe.confirmCardPayment(data.clientSecret, { payment_method: { card: cardElement } });
-                    if (result.error) {
-                        alert(result.error.message);
-                    } else { 
-                        alert("Thank you for your donation!"); 
-                        toggleDonationModal(); 
-                    }
+                    if (result.error) { alert(result.error.message); } 
+                    else { alert("Thank you for your donation!"); toggleDonationModal(); }
                 }
-            } catch (e) { 
-                alert("Connection error. Please try again."); 
-            } finally { 
-                btn.disabled = false; 
-                btn.innerHTML = 'Complete Donation'; 
-            }
+            } catch (e) { alert("Connection error."); } 
+            finally { btn.disabled = false; btn.innerHTML = 'Complete Donation'; }
         }
 
         function initPayPal() {
@@ -135,7 +169,7 @@
             }).render('#paypal-button-container');
         }
 
-        // --- INICIO SCRIPT CONTACTO CORREGIDO ---
+        // --- CONTACTO ---
         async function handleContactSubmit(event) {
             event.preventDefault(); 
             const btn = event.target.querySelector('button[type="submit"]');
@@ -143,12 +177,29 @@
             btn.disabled = true;
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Sending...';
 
-            // Capturamos los datos con los IDs exactos del HTML
+            // Validación extra del Checkbox
+            const medicalCheckbox = document.getElementById('medical-disclaimer');
+            if (!medicalCheckbox.checked) {
+                alert(currentLang === 'en' ? "You must confirm the medical disclaimer." : "Debes confirmar el descargo de responsabilidad médico.");
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+                return;
+            }
+
+            const recaptchaToken = grecaptcha.getResponse();
+            if (!recaptchaToken) {
+                alert(currentLang === 'en' ? "Please complete the reCAPTCHA." : "Por favor, completa el reCAPTCHA.");
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+                return;
+            }
+
             const formData = {
                 fullName: document.getElementById('contact-name').value,
                 email: document.getElementById('contact-email').value,
                 phone: document.getElementById('contact-phone').value,
-                message: document.getElementById('contact-message').value
+                message: document.getElementById('contact-message').value,
+                recaptchaToken: recaptchaToken // <- Enviamos el token al backend
             };
 
             try {
@@ -158,57 +209,58 @@
                     body: JSON.stringify(formData)
                 });
                 const result = await response.json();
-                
                 if(result.success) {
                     alert("Thank you! Your message has been received.");
                     event.target.reset(); 
                 }
-            } catch (error) {
-                alert("There was an error sending your message. Please try again.");
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = originalText;
-            }
+            } catch (error) { alert("Error sending message."); } 
+            finally { btn.disabled = false; btn.innerHTML = originalText; }
         }
-// --- FIN SCRIPT CONTACTO CORREGIDO ---
+    </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      // Reemplaza G-XXXXXXXXXX con tu "ID de medición" real de Google Analytics Para obtener el código G-XXXXXXXXXX, debes crear una cuenta gratuita en analytics.google.com y registrar el dominio de la ONG
+      gtag('config', 'G-XXXXXXXXXX');
     </script>
 </head>
 <body class="text-slate-700 bg-white antialiased scroll-smooth">
 
-    <nav class="sticky top-0 z-50 bg-white/95 backdrop-blur shadow-sm border-b border-slate-100">
+    <nav class="relative z-50 bg-white shadow-sm border-b border-slate-100">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-       <div class="flex justify-between items-center py-1 md:py-2">
-    
-    <a href="#" class="flex items-center gap-3">
-        <img class="h-32 md:h-44 w-auto object-contain scale-125 md:scale-150 origin-left transition-all" 
-             src="DIGITAL USE - Transparent Background.png" 
-             alt="Connection Salud Network">
-    </a>
+        <div class="flex justify-between items-center h-29 md:h-29">
+            
+            <div class="flex items-center h-full">
+                <a href="#" class="flex items-center h-full w-48 md:w-64">
+                    <img class="w-full scale-[1.5] md:scale-[2.0] origin-left" 
+                    src="DIGITAL USE - Transparent Background.png" 
+                    alt="Connection Salud Network">
+                </a>
+            </div>
 
-            <div class="flex items-center gap-2 md:hidden">
-                <button onclick="toggleDonationModal()" class="bg-brand-blue text-white px-4 py-2 rounded-full font-bold text-sm shadow-lg">Donate</button>
-                <button id="mobile-menu-btn" class="text-slate-600 p-2">
-                    <i class="fa-solid fa-bars text-2xl"></i>
+            <div class="flex items-center gap-4 md:gap-8">
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="#about" class="text-slate-600 font-bold hover:text-brand-blue transition" data-es="Nosotros">About Us</a>
+                    <a href="#programs" class="text-slate-600 font-bold hover:text-brand-blue transition" data-es="Programas">Future Programs</a>
+                    <a href="#contact" class="text-slate-600 font-bold hover:text-brand-blue transition" data-es="Contacto">Contact</a>
+                </div>
+
+                <button onclick="toggleLanguage()" class="flex items-center gap-2 px-3 py-2 text-slate-600 font-bold border border-slate-200 rounded-xl hover:bg-slate-50">
+                    <i class="fa-solid fa-globe text-brand-blue"></i>
+                    <span id="lang-text">ES</span>
+                </button>
+
+                <button onclick="toggleDonationModal()" data-es="Donar" class="bg-brand-blue text-white px-6 py-3 rounded-full font-black shadow-lg hover:bg-blue-700 transition transform hover:-translate-y-0.5">
+                    Donate
+                </button>
+                
+                <button id="mobile-menu-btn" class="md:hidden text-slate-600 p-2">
+                    <i class="fa-solid fa-bars text-3xl"></i>
                 </button>
             </div>
-
-            <div class="hidden md:flex items-center gap-8">
-                <a href="#about" class="text-slate-600 font-medium hover:text-brand-blue transition">About Us</a>
-                <a href="#programs" class="text-slate-600 font-medium hover:text-brand-blue transition">Future Programs</a>
-                <a href="#resources" class="text-slate-600 font-medium hover:text-brand-blue transition">Resources</a>
-                <a href="#stories" class="text-slate-600 font-medium hover:text-brand-blue transition">Stories</a>
-                <a href="#contact" class="text-slate-600 font-medium hover:text-brand-blue transition">Contact</a>
-                <button onclick="toggleDonationModal()" class="bg-brand-blue text-white px-6 py-2.5 rounded-full font-bold hover:bg-sky-700 transition shadow-lg shadow-sky-200">Donate</button>
-            </div>
-        </div>
-
-        <div id="mobile-menu" class="hidden md:hidden flex-col gap-4 pb-6 pt-2 border-t border-slate-100">
-            <a href="#about" class="text-slate-600 font-medium hover:text-brand-blue transition block">About Us</a>
-            <a href="#programs" class="text-slate-600 font-medium hover:text-brand-blue transition block">Future Programs</a>
-            <a href="#resources" class="text-slate-600 font-medium hover:text-brand-blue transition block">Resources</a>
-            <a href="#stories" class="text-slate-600 font-medium hover:text-brand-blue transition block">Stories</a>
-            <a href="#contact" class="text-slate-600 font-medium hover:text-brand-blue transition block">Contact</a>
-            <button onclick="toggleDonationModal()" class="bg-brand-blue text-white px-6 py-3 rounded-full font-bold w-full mt-2">Donate Now</button>
         </div>
     </div>
 </nav>
@@ -217,16 +269,20 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="grid md:grid-cols-2 gap-12 items-center">
                 <div>
-                    <h1 class="font-heading text-5xl md:text-6xl font-extrabold text-slate-900 leading-tight mb-8">
-                        Connecting Communities to <span class="text-brand-blue">Health, Knowledge</span>, and Opportunity
-                    </h1>
-                    <p class="text-lg text-slate-600 mb-10 leading-relaxed max-w-lg">
-                        Connection Salud Network, Inc. is a new nonprofit organization dedicated to expanding access to prevention services and health education.
-                    </p>
-                    <div class="flex flex-wrap gap-4">
-                        <a href="#about" class="bg-brand-blue text-white px-8 py-4 rounded-full font-bold shadow-lg hover:bg-sky-700 transition">Our Mission</a>
-                        <a href="#contact" class="bg-white text-brand-blue border-2 border-brand-blue px-8 py-4 rounded-full font-bold hover:bg-brand-light transition">Request Information</a>
-                    </div>
+                    <h1 class="font-heading text-5xl md:text-6xl font-extrabold text-slate-900 leading-tight mb-8" 
+    data-es="Conectando Comunidades con la <span class='text-brand-blue'>Salud, el Conocimiento</span> y las Oportunidades">
+    Connecting Communities to <span class="text-brand-blue">Health, Knowledge</span>, and Opportunity
+</h1>
+<p class="text-lg text-slate-600 mb-10 leading-relaxed max-w-lg" 
+   data-es="Connection Salud Network, Inc. es una nueva organización sin fines de lucro dedicada a ampliar el acceso a servicios de prevención y educación en salud.">
+    Connection Salud Network, Inc. is a new nonprofit organization dedicated to expanding access to prevention services and health education.
+</p>
+<div class="flex flex-wrap gap-4">
+    <a href="#about" class="bg-brand-blue text-white px-8 py-4 rounded-full font-bold shadow-lg hover:bg-sky-700 transition" 
+       data-es="Nuestra Misión">Our Mission</a>
+    <a href="#contact" class="bg-white text-brand-blue border-2 border-brand-blue px-8 py-4 rounded-full font-bold hover:bg-brand-light transition" 
+       data-es="Solicitar Información">Request Information</a>
+</div>
                 </div>
                 <div class="relative">
                     <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&q=80" alt="Community Health" class="rounded-[40px] shadow-2xl border-8 border-white">
@@ -239,158 +295,276 @@
         </div>
     </section>
 
-    <section id="about" class="py-24 bg-white">
-        <div class="max-w-4xl mx-auto px-4 text-center">
-            <h2 class="font-heading text-4xl font-bold text-slate-900 mb-8">Our Beginning</h2>
-            <div class="prose prose-lg text-slate-600 mx-auto leading-relaxed">
-                <p class="mb-6 italic">"Connection Salud Network, Inc. was founded with a simple but powerful belief: that every person deserves access to the knowledge, support, and resources needed to live a healthy and empowered life."</p>
-                <p>Our founders witnessed firsthand the challenges faced by vulnerable communities—barriers to care and a lack of culturally responsive education. This inspired the creation of an organization dedicated to bridging those divides.</p>
-            </div>
-        </div>
+    <div class="max-w-4xl mx-auto px-4 text-center">
+    <h2 class="font-heading text-4xl font-bold text-slate-900 mb-8" data-es="Nuestro Comienzo">Our Beginning</h2>
+    <div class="prose prose-lg text-slate-600 mx-auto leading-relaxed">
+        <p class="mb-6 italic" data-es="&quot;Connection Salud Network, Inc. fue fundada con una creencia simple pero poderosa: que cada persona merece acceso al conocimiento, el apoyo y los recursos necesarios para vivir una vida saludable y empoderada.&quot;">
+            "Connection Salud Network, Inc. was founded with a simple but powerful belief: that every person deserves access to the knowledge, support, and resources needed to live a healthy and empowered life."
+        </p>
+        <p data-es="Nuestros fundadores presenciaron de primera mano los desafíos que enfrentan las comunidades vulnerables: barreras para la atención y falta de educación culturalmente receptiva. Esto inspiró la creación de una organización dedicada a cerrar esas brechas.">
+            Our founders witnessed firsthand the challenges faced by vulnerable communities—barriers to care and a lack of culturally responsive education. This inspired the creation of an organization dedicated to bridging those divides.
+        </p>
+    </div>
+</div>
 
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24">
-            <div class="grid md:grid-cols-2 gap-12 items-stretch">
-                <div class="bg-brand-light p-12 rounded-[40px] border border-cyan-100 shadow-sm">
-                    <div class="w-16 h-16 bg-brand-blue text-white rounded-2xl flex items-center justify-center text-2xl mb-6 shadow-lg"><i class="fa-solid fa-bullseye"></i></div>
-                    <h3 class="font-heading text-3xl font-bold text-slate-900 mb-6">Our Mission</h3>
-                    <p class="text-slate-600 leading-relaxed text-lg">To provide prevention services, health education, and access to essential resources for vulnerable and underserved populations, promoting holistic wellbeing and health equity.</p>
-                </div>
-                <div class="bg-slate-50 p-12 rounded-[40px] border border-slate-200 shadow-sm">
-                    <div class="w-16 h-16 bg-brand-green text-white rounded-2xl flex items-center justify-center text-2xl mb-6 shadow-lg"><i class="fa-solid fa-eye"></i></div>
-                    <h3 class="font-heading text-3xl font-bold text-slate-900 mb-6">Our Vision</h3>
-                    <p class="text-slate-600 leading-relaxed text-lg">A future where every individual regardless of background has equitable access to the information and support needed to live a healthy, empowered life.</p>
-                </div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-16">
+    <div class="group relative p-8 rounded-[2rem] bg-white border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-blue-100/50 hover:-translate-y-2 transition-all duration-500 overflow-hidden">
+        <div class="absolute -right-4 -top-4 w-24 h-24 bg-blue-50 rounded-full blur-2xl group-hover:bg-blue-100 transition-colors"></div>
+        
+        <div class="relative">
+            <div class="w-16 h-16 mb-6 rounded-2xl bg-gradient-to-br from-blue-500 to-brand-blue flex items-center justify-center text-white shadow-lg shadow-blue-200 group-hover:rotate-6 transition-transform duration-300">
+                <i class="fa-solid fa-bullseye text-2xl"></i>
             </div>
+            
+            <h3 class="font-nunito font-extrabold text-2xl text-slate-900 mb-4 flex items-center" data-es="Nuestra Misión">
+                Our Mission
+                <span class="ml-2 w-8 h-[2px] bg-blue-200 group-hover:w-12 transition-all"></span>
+            </h3>
+            
+            <p class="text-slate-600 leading-relaxed font-medium" 
+               data-es="Brindar servicios de prevención, educación en salud y acceso a recursos esenciales para poblaciones vulnerables y desatendidas, promoviendo el bienestar integral, la equidad en salud y el empoderamiento comunitario.">
+                To provide prevention services, health education, and access to essential resources for vulnerable and underserved populations, promoting holistic wellbeing, health equity, and community empowerment.
+            </p>
         </div>
+    </div>
+
+    <div class="group relative p-8 rounded-[2rem] bg-white border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-emerald-100/50 hover:-translate-y-2 transition-all duration-500 overflow-hidden">
+        <div class="absolute -right-4 -top-4 w-24 h-24 bg-emerald-50 rounded-full blur-2xl group-hover:bg-emerald-100 transition-colors"></div>
+        
+        <div class="relative">
+            <div class="w-16 h-16 mb-6 rounded-2xl bg-gradient-to-br from-emerald-400 to-brand-green flex items-center justify-center text-white shadow-lg shadow-emerald-200 group-hover:-rotate-6 transition-transform duration-300">
+                <i class="fa-solid fa-eye text-2xl"></i>
+            </div>
+            
+            <h3 class="font-nunito font-extrabold text-2xl text-slate-900 mb-4 flex items-center" data-es="Nuestra Visión">
+                Our Vision
+                <span class="ml-2 w-8 h-[2px] bg-emerald-200 group-hover:w-12 transition-all"></span>
+            </h3>
+            
+            <p class="text-slate-600 leading-relaxed font-medium" 
+               data-es="Construir un mundo donde la equidad en salud sea una realidad, y cada individuo tenga los recursos y el apoyo para alcanzar su máximo potencial para una vida saludable y plena.">
+                To build a world where health equity is a reality, and every individual has the resources and support to achieve their full potential for a healthy, fulfilling life.
+            </p>
+        </div>
+    </div>
+</div>
 
         <div class="max-w-7xl mx-auto px-4 mt-24">
-            <h3 class="text-center font-heading text-3xl font-bold mb-12">Our Values</h3>
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-6">
-                <div class="text-center p-6 bg-white rounded-2xl border border-slate-100 shadow-sm">
-                    <div class="text-brand-blue text-2xl mb-3"><i class="fa-solid fa-scale-balanced"></i></div>
-                    <p class="font-bold text-sm">Equity</p>
-                </div>
-                <div class="text-center p-6 bg-white rounded-2xl border border-slate-100 shadow-sm">
-                    <div class="text-brand-blue text-2xl mb-3"><i class="fa-solid fa-handshake"></i></div>
-                    <p class="font-bold text-sm">Respect</p>
-                </div>
-                <div class="text-center p-6 bg-white rounded-2xl border border-slate-100 shadow-sm">
-                    <div class="text-brand-blue text-2xl mb-3"><i class="fa-solid fa-users"></i></div>
-                    <p class="font-bold text-sm">Community</p>
-                </div>
-                <div class="text-center p-6 bg-white rounded-2xl border border-slate-100 shadow-sm">
-                    <div class="text-brand-blue text-2xl mb-3"><i class="fa-solid fa-shield-heart"></i></div>
-                    <p class="font-bold text-sm">Integrity</p>
-                </div>
-                <div class="text-center p-6 bg-white rounded-2xl border border-slate-100 shadow-sm">
-                    <div class="text-brand-blue text-2xl mb-3"><i class="fa-solid fa-heart"></i></div>
-                    <p class="font-bold text-sm">Compassion</p>
-                </div>
-            </div>
-        </div>
+    <h3 class="text-center font-heading text-3xl font-bold mb-12" data-es="Nuestros Valores">Our Values</h3>
+    <div class="flex flex-col gap-4 max-w-4xl mx-auto">
+        <details class="group bg-white rounded-2xl border border-slate-200 shadow-sm p-6 cursor-pointer transition-all open:border-brand-blue open:shadow-md">
+            <summary class="font-bold text-lg flex justify-between items-center text-slate-800 list-none outline-none">
+                <span class="flex items-center gap-4" data-es="<i class='fa-solid fa-scale-balanced text-brand-blue text-2xl w-8'></i> Equidad">
+                    <i class="fa-solid fa-scale-balanced text-brand-blue text-2xl w-8"></i> Equity
+                </span>
+                <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
+            </summary>
+            <p class="mt-4 text-slate-600 ml-12" data-es="Garantizar que todos tengan un acceso justo a los recursos de salud, independientemente de su origen o circunstancias.">
+                Ensuring everyone has fair access to health resources, regardless of their background or circumstances.
+            </p>
+        </details>
+
+        <details class="group bg-white rounded-2xl border border-slate-200 shadow-sm p-6 cursor-pointer transition-all open:border-brand-blue open:shadow-md">
+            <summary class="font-bold text-lg flex justify-between items-center text-slate-800 list-none outline-none">
+                <span class="flex items-center gap-4" data-es="<i class='fa-solid fa-hand-holding-heart text-brand-blue text-2xl w-8'></i> Respeto">
+                    <i class="fa-solid fa-hand-holding-heart text-brand-blue text-2xl w-8"></i> Respect
+                </span>
+                <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
+            </summary>
+            <p class="mt-4 text-slate-600 ml-12" data-es="Valorar la dignidad de cada individuo y fomentar un entorno de inclusión y comprensión.">
+                Valuing the dignity of every individual and fostering an environment of inclusion and understanding.
+            </p>
+        </details>
+
+        <details class="group bg-white rounded-2xl border border-slate-200 shadow-sm p-6 cursor-pointer transition-all open:border-brand-blue open:shadow-md">
+            <summary class="font-bold text-lg flex justify-between items-center text-slate-800 list-none outline-none">
+                <span class="flex items-center gap-4" data-es="<i class='fa-solid fa-users text-brand-blue text-2xl w-8'></i> Comunidad">
+                    <i class="fa-solid fa-users text-brand-blue text-2xl w-8"></i> Community
+                </span>
+                <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
+            </summary>
+            <p class="mt-4 text-slate-600 ml-12" data-es="Trabajar juntos para construir redes de apoyo sólidas que fortalezcan el bienestar colectivo.">
+                Working together to build strong support networks that strengthen collective well-being.
+            </p>
+        </details>
+
+        <details class="group bg-white rounded-2xl border border-slate-200 shadow-sm p-6 cursor-pointer transition-all open:border-brand-blue open:shadow-md">
+            <summary class="font-bold text-lg flex justify-between items-center text-slate-800 list-none outline-none">
+                <span class="flex items-center gap-4" data-es="<i class='fa-solid fa-shield-heart text-brand-blue text-2xl w-8'></i> Integridad">
+                    <i class="fa-solid fa-shield-heart text-brand-blue text-2xl w-8"></i> Integrity
+                </span>
+                <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
+            </summary>
+            <p class="mt-4 text-slate-600 ml-12" data-es="Actuar con honestidad, transparencia y ética en todos nuestros servicios y relaciones.">
+                Acting with honesty, transparency, and ethics in all our services and relationships.
+            </p>
+        </details>
+
+        <details class="group bg-white rounded-2xl border border-slate-200 shadow-sm p-6 cursor-pointer transition-all open:border-brand-blue open:shadow-md">
+            <summary class="font-bold text-lg flex justify-between items-center text-slate-800 list-none outline-none">
+                <span class="flex items-center gap-4" data-es="<i class='fa-solid fa-heart-pulse text-brand-blue text-2xl w-8'></i> Compasión">
+                    <i class="fa-solid fa-heart-pulse text-brand-blue text-2xl w-8"></i> Compassion
+                </span>
+                <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
+            </summary>
+            <p class="mt-4 text-slate-600 ml-12" data-es="Brindar apoyo con empatía y calidez humana a quienes más lo necesitan.">
+                Providing support with empathy and human warmth to those who need it most.
+            </p>
+        </details>
+    </div>
+</div>
     </section>
 
     <section id="programs" class="py-24 bg-slate-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
-                <h2 class="font-heading text-4xl font-bold text-slate-900 mb-4">Future Programs & Services</h2>
-                <p class="text-slate-600 max-w-2xl mx-auto">Launching in phases as our organization grows to meet community needs.</p>
+                <h2 class="font-heading text-4xl font-bold text-slate-900 mb-4" data-es="Futuros Programas y Servicios">Future Programs & Services</h2>
+                <p class="text-slate-600 max-w-2xl mx-auto" data-es="Lanzados en fases a medida que nuestra organización crece para satisfacer las necesidades de la comunidad.">Launching in phases as our organization grows to meet community needs.</p>
             </div>
             
             <div class="grid md:grid-cols-3 gap-8">
-                <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
-                    <div class="text-brand-blue text-3xl mb-4"><i class="fa-solid fa-heart-pulse"></i></div>
-                    <h4 class="text-xl font-bold mb-3">Sexual Health Promotion</h4>
-                    <p class="text-slate-500 text-sm mb-4">Empowering individuals with accurate, culturally responsive information for sexual wellness.</p>
-                </div>
+    <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
+        <div class="text-brand-blue text-3xl mb-4"><i class="fa-solid fa-heart-pulse"></i></div>
+        <h4 class="text-xl font-bold mb-3" data-es="Promoción de la Salud Sexual">Sexual Health Promotion</h4>
+        <p class="text-slate-500 text-sm mb-4" data-es="Empoderar a las personas con información precisa y culturalmente receptiva para el bienestar sexual.">Empowering individuals with accurate, culturally responsive information for sexual wellness.</p>
+    </div>
 
-                <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 relative overflow-hidden">
-                    <span class="absolute top-4 right-[-35px] bg-amber-400 text-white text-[10px] font-black py-1 px-10 rotate-45">COMING SOON</span>
-                    <div class="text-brand-green text-3xl mb-4 opacity-50"><i class="fa-solid fa-vial"></i></div>
-                    <h4 class="text-xl font-bold mb-3 opacity-70">Rapid Testing Services</h4>
-                    <p class="text-slate-500 text-sm opacity-70">Confidential, fast, and accessible testing to help members connect to care.</p>
-                </div>
+    <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 relative overflow-hidden">
+        <span class="absolute top-4 right-[-35px] bg-amber-400 text-white text-[10px] font-black py-1 px-10 rotate-45" data-es="PRÓXIMAMENTE">COMING SOON</span>
+        <div class="text-brand-green text-3xl mb-4 opacity-50"><i class="fa-solid fa-vial"></i></div>
+        <h4 class="text-xl font-bold mb-3 opacity-70" data-es="Servicios de Pruebas Rápidas">Rapid Testing Services</h4>
+        <p class="text-slate-500 text-sm opacity-70" data-es="Pruebas confidenciales, rápidas y accesibles para ayudar a los miembros a conectarse con la atención médica.">Confidential, fast, and accessible testing to help members connect to care.</p>
+    </div>
 
-                <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 relative overflow-hidden">
-                    <span class="absolute top-4 right-[-35px] bg-amber-400 text-white text-[10px] font-black py-1 px-10 rotate-45">COMING SOON</span>
-                    <div class="text-brand-cyan text-3xl mb-4 opacity-50"><i class="fa-solid fa-link"></i></div>
-                    <h4 class="text-xl font-bold mb-3 opacity-70">Linkage to Care</h4>
-                    <p class="text-slate-500 text-sm opacity-70">Helping individuals navigate the system and access primary and behavioral health care.</p>
-                </div>
+    <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 relative overflow-hidden">
+        <span class="absolute top-4 right-[-35px] bg-amber-400 text-white text-[10px] font-black py-1 px-10 rotate-45" data-es="PRÓXIMAMENTE">COMING SOON</span>
+        <div class="text-brand-cyan text-3xl mb-4 opacity-50"><i class="fa-solid fa-link"></i></div>
+        <h4 class="text-xl font-bold mb-3 opacity-70" data-es="Enlace a la Atención">Linkage to Care</h4>
+        <p class="text-slate-500 text-sm opacity-70" data-es="Ayudar a las personas a navegar el sistema y acceder a atención primaria y de salud conductual.">Helping individuals navigate the system and access primary and behavioral health care.</p>
+    </div>
 
-                <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 relative overflow-hidden">
-                    <span class="absolute top-4 right-[-35px] bg-amber-400 text-white text-[10px] font-black py-1 px-10 rotate-45">COMING SOON</span>
-                    <div class="text-brand-blue text-3xl mb-4 opacity-50"><i class="fa-solid fa-brain"></i></div>
-                    <h4 class="text-xl font-bold mb-3 opacity-70">Mental Health Support</h4>
-                    <p class="text-slate-500 text-sm opacity-70">Initiatives promoting emotional wellbeing, resilience, and peer support.</p>
-                </div>
+    <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 relative overflow-hidden">
+        <span class="absolute top-4 right-[-35px] bg-amber-400 text-white text-[10px] font-black py-1 px-10 rotate-45" data-es="PRÓXIMAMENTE">COMING SOON</span>
+        <div class="text-brand-blue text-3xl mb-4 opacity-50"><i class="fa-solid fa-brain"></i></div>
+        <h4 class="text-xl font-bold mb-3 opacity-70" data-es="Apoyo a la Salud Mental">Mental Health Support</h4>
+        <p class="text-slate-500 text-sm opacity-70" data-es="Iniciativas que promueven el bienestar emocional, la resiliencia y el apoyo entre pares.">Initiatives promoting emotional wellbeing, resilience, and peer support.</p>
+    </div>
 
-                <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 relative overflow-hidden">
-                    <span class="absolute top-4 right-[-35px] bg-brand-blue text-white text-[10px] font-black py-1 px-10 rotate-45">FUTURE</span>
-                    <div class="text-brand-green text-3xl mb-4 opacity-50"><i class="fa-solid fa-ribbon"></i></div>
-                    <h4 class="text-xl font-bold mb-3 opacity-70">Veteran Services</h4>
-                    <p class="text-slate-500 text-sm opacity-70">Specialized support focusing on wellness, reintegration, and connection.</p>
-                </div>
+    <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 relative overflow-hidden">
+        <span class="absolute top-4 right-[-35px] bg-brand-blue text-white text-[10px] font-black py-1 px-10 rotate-45" data-es="FUTURO">FUTURE</span>
+        <div class="text-brand-green text-3xl mb-4 opacity-50"><i class="fa-solid fa-ribbon"></i></div>
+        <h4 class="text-xl font-bold mb-3 opacity-70" data-es="Servicios para Veteranos">Veteran Services</h4>
+        <p class="text-slate-500 text-sm opacity-70" data-es="Apoyo especializado centrado en el bienestar, la reintegración y la conexión.">Specialized support focusing on wellness, reintegration, and connection.</p>
+    </div>
 
-                <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 relative overflow-hidden">
-                    <span class="absolute top-4 right-[-35px] bg-amber-400 text-white text-[10px] font-black py-1 px-10 rotate-45">COMING SOON</span>
-                    <div class="text-brand-cyan text-3xl mb-4 opacity-50"><i class="fa-solid fa-users"></i></div>
-                    <h4 class="text-xl font-bold mb-3 opacity-70">Community Outreach</h4>
-                    <p class="text-slate-500 text-sm opacity-70">Building relationships to identify needs and promote health equity.</p>
+    <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 relative overflow-hidden">
+        <span class="absolute top-4 right-[-35px] bg-amber-400 text-white text-[10px] font-black py-1 px-10 rotate-45" data-es="PRÓXIMAMENTE">COMING SOON</span>
+        <div class="text-brand-cyan text-3xl mb-4 opacity-50"><i class="fa-solid fa-users"></i></div>
+        <h4 class="text-xl font-bold mb-3 opacity-70" data-es="Alcance Comunitario">Community Outreach</h4>
+        <p class="text-slate-500 text-sm opacity-70" data-es="Construir relaciones para identificar necesidades y promover la equidad en salud.">Building relationships to identify needs and promote health equity.</p>
+    </div>
+</div>
+        </div>
+    </section>
+
+    <section id="team-events" class="py-24 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="font-heading text-4xl font-bold text-slate-900 mb-4" data-es="Nuestro Equipo y Eventos">Our Team & Events</h2>
+                <p class="text-slate-600 max-w-2xl mx-auto" data-es="Conoce a las personas detrás de nuestra misión y descubre nuestros eventos comunitarios.">Meet the people behind our mission and check out our community events.</p>
+            </div>
+
+            <div class="swiper mySwiper rounded-3xl shadow-xl overflow-hidden mb-12 border-4 border-white">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide relative h-96 bg-slate-200">
+                        <img src="https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?auto=format&fit=crop&q=80" alt="Team" class="w-full h-full object-cover">
+                        <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-slate-900 to-transparent p-8">
+                            <h3 class="text-white text-2xl font-bold">Community Outreach 2025</h3>
+                        </div>
+                    </div>
+                    <div class="swiper-slide relative h-96 bg-slate-200">
+                        <img src="https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&q=80" alt="Events" class="w-full h-full object-cover">
+                        <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-slate-900 to-transparent p-8">
+                            <h3 class="text-white text-2xl font-bold">Health Education Seminar</h3>
+                        </div>
+                    </div>
+                    <div class="swiper-slide relative h-96 bg-slate-200">
+                        <img src="https://images.unsplash.com/photo-1573497620053-ea5300f94f21?auto=format&fit=crop&q=80" alt="Our Team" class="w-full h-full object-cover">
+                        <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-slate-900 to-transparent p-8">
+                            <h3 class="text-white text-2xl font-bold">Our Medical Staff</h3>
+                        </div>
+                    </div>
                 </div>
+                <div class="swiper-button-next text-brand-blue"></div>
+                <div class="swiper-button-prev text-brand-blue"></div>
+                <div class="swiper-pagination"></div>
             </div>
         </div>
     </section>
 
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        var swiper = new Swiper(".mySwiper", {
+          loop: true,
+          autoplay: { delay: 3500, disableOnInteraction: false },
+          pagination: { el: ".swiper-pagination", clickable: true },
+          navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
+        });
+      });
+    </script>
+
     <section id="contact" class="py-24 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-brand-blue rounded-[40px] p-8 md:p-16 text-white grid md:grid-cols-2 gap-12 items-center">
-                <div>
-                    <h2 class="font-heading text-4xl font-bold mb-6">Stay Connected</h2>
-                    <p class="text-blue-100 text-lg mb-8 leading-relaxed">
-                        Be the first to know when our programs launch. We welcome questions, partnership inquiries, and community connections.
-                    </p>
-                    <div class="space-y-4">
-                        <div class="flex items-center space-x-4">
-                            <i class="fa-solid fa-envelope text-2xl text-brand-green"></i>
-                            <span>Info@connectionsalud.org</span>
-                        </div>
-                        <div class="flex items-center space-x-4">
-                            <i class="fa-solid fa-triangle-exclamation text-brand-green"></i>
-                            <span class="text-xs text-blue-100 italic">Form is not for emergencies. In case of a medical emergency, contact local services.</span>
-                        </div>
-                    </div>
-                </div>
+    <div>
+        <h2 class="font-heading text-4xl font-bold mb-6" data-es="Mantente Conectado">Stay Connected</h2>
+        <p class="text-blue-100 text-lg mb-8 leading-relaxed" data-es="Sé el primero en saber cuándo lanzamos nuestros programas. Agradecemos preguntas, consultas de asociación y conexiones comunitarias.">
+            Be the first to know when our programs launch. We welcome questions, partnership inquiries, and community connections.
+        </p>
+        <div class="space-y-4">
+            <div class="flex items-center space-x-4">
+                <i class="fa-solid fa-envelope text-2xl text-brand-green"></i>
+                <span>Info@connectionsalud.org</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <i class="fa-solid fa-triangle-exclamation text-brand-green"></i>
+                <span class="text-xs text-blue-100 italic" data-es="El formulario no es para emergencias. En caso de una emergencia médica, contacte a los servicios locales.">
+                    Form is not for emergencies. In case of a medical emergency, contact local services.
+                </span>
+            </div>
+        </div>
+    </div>
 
                 <div class="bg-white p-8 rounded-3xl text-slate-800 shadow-2xl">
-                    <form onsubmit="handleContactSubmit(event)" class="space-y-4">
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Full Name</label>
-                            <input type="text" id="contact-name" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-brand-blue outline-none transition">
-                        </div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Email</label>
-                                <input type="email" id="contact-email" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-brand-blue outline-none transition">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Phone (Optional)</label>
-                                <input type="tel" id="contact-phone" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-brand-blue outline-none transition">
-                            </div>
-                        </div>
-                        <div class="mt-4">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Message</label>
-                            <textarea id="contact-message" rows="4" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-brand-blue outline-none transition"></textarea>
-                        </div>
-                        <div class="flex items-start space-x-3 py-2">
-                            <input type="checkbox" required class="mt-1 h-4 w-4 rounded border-slate-300 text-brand-blue focus:ring-brand-blue">
-                            <p class="text-[10px] text-slate-500 leading-tight">
-                                I confirm that I will not include medical or health information in this message. 
-                            </p>
-                        </div>
-                        <button type="submit" class="w-full bg-brand-green text-white font-bold py-4 rounded-xl shadow-lg hover:bg-emerald-600 transition">Request Information</button>
-                    </form>
-                </div>
+    <form onsubmit="handleContactSubmit(event)" class="space-y-4">
+        <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1" data-es="Nombre Completo">Full Name</label>
+            <input type="text" id="contact-name" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-brand-blue outline-none transition">
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1" data-es="Correo Electrónico">Email</label>
+                <input type="email" id="contact-email" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-brand-blue outline-none transition">
+            </div>
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1" data-es="Teléfono (Opcional)">Phone (Optional)</label>
+                <input type="tel" id="contact-phone" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-brand-blue outline-none transition">
+            </div>
+        </div>
+        <div class="mt-4">
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1" data-es="Mensaje">Message</label>
+            <textarea id="contact-message" rows="4" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-brand-blue outline-none transition"></textarea>
+        </div>
+        <div class="flex items-start space-x-3 py-2">
+            <input type="checkbox" id="medical-disclaimer" required class="mt-1 h-4 w-4 rounded border-slate-300 text-brand-blue focus:ring-brand-blue cursor-pointer">
+            <label for="medical-disclaimer" class="text-[10px] text-slate-500 leading-tight cursor-pointer select-none" data-es="Confirmo que no incluiré información médica o de salud en este mensaje.">
+                I confirm that I will not include medical or health information in this message. 
+            </label>
+        </div>
+        <div class="g-recaptcha mb-4 flex justify-center" data-sitekey="TU_CLAVE_DE_SITIO_PUBLICA"></div>
+        <button type="submit" data-es="Solicitar Información" class="w-full bg-brand-green text-white font-bold py-4 rounded-xl shadow-lg hover:bg-emerald-600 transition">Request Information</button>
+    </form>
+</div>
             </div>
         </div>
     </section>
@@ -411,12 +585,17 @@
             </ul>
         </div>
         <div>
-            <h5 class="text-white font-bold mb-6">Social</h5>
-            <div class="flex space-x-4">
+            <h5 class="text-white font-bold mb-6">Social & Partners</h5>
+            <div class="flex space-x-4 mb-6">
+                <a href="https://www.instagram.com/connectionsalud?igsh=MWowbnUzaWNxb3ZjYw==" target="_blank" class="text-2xl hover:text-white transition"><i class="fa-brands fa-instagram"></i></a>
                 <a href="#" class="text-2xl hover:text-white transition"><i class="fa-brands fa-facebook"></i></a>
-                <a href="#" class="text-2xl hover:text-white transition"><i class="fa-brands fa-instagram"></i></a>
                 <a href="#" class="text-2xl hover:text-white transition"><i class="fa-brands fa-linkedin"></i></a>
             </div>
+            
+            <h5 class="text-white font-bold mb-3 text-sm">Our Collaborator</h5>
+            <a href="https://www.instagram.com/ahfsouth?igsh=YTMyMnN5b3Zna2d0" target="_blank" class="flex items-center gap-2 hover:text-white transition text-sm">
+                <i class="fa-brands fa-instagram text-xl"></i> AHF South
+            </a>
         </div>
     </div>
 
@@ -426,6 +605,7 @@
             <span class="opacity-20">|</span>
             <a href="#contact" class="hover:text-white transition mx-2">Terms of Service</a>
         </div>
+        <p class="font-bold text-slate-300 mb-2 text-sm tracking-wide">CONNECTION SALUD IS A NONPROFIT, TAX-EXEMPT 501(C)(3) ORGANIZATION</p>
         © 2026 Connection Salud Network, Inc. All rights reserved.
     </div>
 </footer>
