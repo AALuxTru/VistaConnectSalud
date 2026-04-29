@@ -12,7 +12,7 @@
     <meta property="og:url" content="https://www.connectionsalud.org/">
     <meta property="og:title" content="Connection Salud Network | Construyendo comunidades más saludables">
     <meta property="og:description" content="Únete a nuestra misión. Brindamos servicios de prevención, educación en salud y recursos para poblaciones vulnerables.">
-    <meta property="og:image" content="https://tu-dominio.com/DIGITAL_USE_Transparent_Background.png">
+    <meta property="og:image" content="https://tu-dominio.com/logo-ong-SF">
     <meta property="og:locale" content="es_ES">
     <meta property="og:locale:alternate" content="en_US">
     
@@ -29,6 +29,44 @@
         /* Corrección para que el acordeón de valores no muestre la flecha fea por defecto en algunos navegadores */
         summary::-webkit-details-marker { display: none; }
         summary { list-style: none; }
+        /* ... tus estilos anteriores ... */
+        /* ... tus otros estilos (acordeón, etc) ... */
+
+    .logo-container {
+        display: block;
+        width: 250px; 
+        height: 80px;
+        background: linear-gradient(
+            to right, 
+            #38bdf8 0%, 
+            #003EDA 25%, 
+            #1e3a8a 50%, 
+            #003EDA 75%, 
+            #38bdf8 100%
+        );
+        background-size: 200% auto;
+        
+        /* MÁSCARA */
+        -webkit-mask-image: url('logo-ong-SF.png');
+        mask-image: url('logo-ong-SF.png');
+        
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat; /* <--- Faltaba esta */
+        
+        -webkit-mask-position: left center;
+        mask-position: left center; /* <--- Faltaba esta */
+        
+        animation: wave-animation 4s linear infinite;
+    }
+
+    @keyframes wave-animation {
+        0% { background-position: 0% center; }
+        100% { background-position: 200% center; }
+    }
+    
     </style>
 
     <script>
@@ -232,10 +270,8 @@
         <div class="flex justify-between items-center py-3 md:py-6">
             
             <div class="flex items-center">
-                <a href="#" class="flex items-center w-36 md:w-64">
-                    <img class="w-full scale-110 md:scale-[2.0] origin-left transition-transform" 
-                    src="DIGITAL USE - Transparent Background.png" 
-                    alt="Connection Salud Network">
+                <a href="#" class="flex items-center">
+                    <div class="logo-container scale-100 md:scale-[1.5] origin-left"></div>
                 </a>
             </div>
 
@@ -263,30 +299,50 @@
     </div>
 </nav>
 
-    <section class="relative bg-brand-light pt-20 pb-32 overflow-hidden">
+    <section class="relative bg-brand-blue pt-20 pb-32 overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="grid md:grid-cols-2 gap-12 items-center">
                 <div>
-                    <h1 class="font-heading text-5xl md:text-6xl font-extrabold text-slate-900 leading-tight mb-8" 
-    data-es="Conectando Comunidades con la <span class='text-brand-blue'>Salud, el Conocimiento</span> y las Oportunidades">
-    Connecting Communities to <span class="text-brand-blue">Health, Knowledge</span>, and Opportunity
-</h1>
-<p class="text-lg text-slate-600 mb-10 leading-relaxed max-w-lg" 
-   data-es="Connection Salud Network, Inc. es una nueva organización sin fines de lucro dedicada a ampliar el acceso a servicios de prevención y educación en salud.">
-    Connection Salud Network, Inc. is a new nonprofit organization dedicated to expanding access to prevention services and health education.
-</p>
-<div class="flex flex-wrap gap-4">
-    <a href="#about" class="bg-brand-blue text-white px-8 py-4 rounded-full font-bold shadow-lg hover:bg-sky-700 transition" 
-       data-es="Nuestra Misión">Our Mission</a>
-    <a href="#contact" class="bg-white text-brand-blue border-2 border-brand-blue px-8 py-4 rounded-full font-bold hover:bg-brand-light transition" 
-       data-es="Solicitar Información">Request Information</a>
-</div>
+                    <h1 class="font-heading text-5xl md:text-6xl font-extrabold text-white leading-tight mb-8" 
+                        data-es="Conectando Comunidades con la <span class='text-brand-green'>Salud, el Conocimiento</span> y las Oportunidades">
+                        Connecting Communities to <span class="text-brand-green">Health, Knowledge</span>, and Opportunity
+                    </h1>
+                    <p class="text-lg text-blue-100 mb-10 leading-relaxed max-w-lg" 
+                       data-es="Connection Salud Network, Inc. es una nueva organización sin fines de lucro dedicada a ampliar el acceso a servicios de prevención y educación en salud.">
+                        Connection Salud Network, Inc. is a new nonprofit organization dedicated to expanding access to prevention services and health education.
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <a href="#about" class="bg-brand-blue text-white px-8 py-4 rounded-full font-bold shadow-lg border border-white/20 hover:bg-blue-700 transition" 
+                           data-es="Nuestra Misión">Our Mission</a>
+                        <a href="#contact" class="bg-white text-brand-blue border-2 border-brand-blue px-8 py-4 rounded-full font-bold hover:bg-brand-light transition" 
+                           data-es="Solicitar Información">Request Information</a>
+                    </div>
                 </div>
                 <div class="relative">
-                    <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&q=80" alt="Community Health" class="rounded-[40px] shadow-2xl border-8 border-white">
-                    <div class="absolute -bottom-6 -left-6 bg-white p-6 rounded-3xl shadow-xl border border-slate-100 hidden md:block">
-                        <p class="text-brand-green font-black text-2xl">Coming Soon</p>
-                        <p class="text-slate-500 text-sm">Building the future of care.</p>
+                    <div class="swiper heroSwiper rounded-[40px] shadow-2xl border-8 border-white overflow-hidden bg-slate-200">
+                        <div class="swiper-wrapper">
+                            <div class="swiper-slide">
+                                <img src="https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?auto=format&fit=crop&q=80" class="w-full h-[450px] object-cover" alt="Community Diversity">
+                            </div>
+                            <div class="swiper-slide">
+                                <img src="https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?auto=format&fit=crop&q=80" class="w-full h-[450px] object-cover" alt="Elderly Care">
+                            </div>
+                            <div class="swiper-slide">
+                                <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&q=80" class="w-full h-[450px] object-cover" alt="Health Education">
+                            </div>
+                            <div class="swiper-slide">
+                                <img src="https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?auto=format&fit=crop&q=80" class="w-full h-[450px] object-cover" alt="Community Outreach">
+                            </div>
+                            <div class="swiper-slide">
+                                <img src="Imagenes/LGTB-Support.jpg" class="w-full h-[450px] object-cover" alt="LGBTQ+ Inclusion and Support">
+                            </div>
+                            <div class="swiper-slide">
+                                <img src="https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?auto=format&fit=crop&q=80" class="w-full h-[450px] object-cover" alt="Wellness and Health">
+                            </div>
+                            <div class="swiper-slide">
+                                <img src="https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&q=80" class="w-full h-[450px] object-cover" alt="Prevention Services">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -501,11 +557,23 @@
 
     <script>
       document.addEventListener('DOMContentLoaded', function () {
-        var swiper = new Swiper(".mySwiper", {
+        // Carrusel del Equipo (Existente)
+        var swiperTeam = new Swiper(".mySwiper", {
           loop: true,
           autoplay: { delay: 3500, disableOnInteraction: false },
           pagination: { el: ".swiper-pagination", clickable: true },
           navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
+        });
+
+        // Nuevo Carrusel del Hero (Corregido para evitar parpadeo de texto)
+        var swiperHero = new Swiper(".heroSwiper", {
+          loop: true,
+          effect: "fade",
+          fadeEffect: {
+            crossFade: true // <--- Esto evita que se vea el texto de fondo entre cambios
+          },
+          speed: 1200,
+          autoplay: { delay: 4000, disableOnInteraction: false },
         });
       });
     </script>
@@ -569,7 +637,7 @@
     <footer class="bg-slate-900 text-slate-400 py-16">
     <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-4 gap-12 mb-12">
         <div class="col-span-1 md:col-span-2">
-            <img class="h-12 w-auto mb-6 grayscale brightness-200 opacity-50" src="DIGITAL USE - Transparent Background.png" alt="Logo">
+            <img class="h-12 w-auto mb-6 grayscale brightness-200 opacity-50" src="logo-ong-SF.png" alt="Logo">
             <p class="text-sm max-w-sm">Building healthier communities through connection, education, and support.</p>
         </div>
         <div>
