@@ -863,6 +863,22 @@
         }
     });
     </script>
+    <script>
+    // Revisar si la URL pide abrir el modal de donación (ej: Index.html?action=donate)
+    document.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('action') === 'donate') {
+            // Abrimos el modal con un ligero retraso para asegurar que la página cargó bien
+            setTimeout(() => {
+                toggleDonationModal();
+                
+                // Limpiar la URL para que no se vuelva a abrir si recargan la página
+                const nuevaUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+                window.history.replaceState({path: nuevaUrl}, '', nuevaUrl);
+            }, 500);
+        }
+    });
+</script>
 </body>
 </html>
 
