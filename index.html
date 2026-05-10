@@ -337,15 +337,11 @@
             </div>
         </div>
     </div>
-    </div> <div id="mobile-menu" class="hidden md:hidden absolute top-full left-0 w-full bg-white shadow-xl border-t border-slate-100 py-6 px-8 flex flex-col gap-6 z-50 rounded-b-3xl transform transition-all duration-300 origin-top">
-    
-    <a href="#home" class="text-slate-600 hover:text-brand-blue font-bold text-lg border-b border-slate-50 pb-2 transition-colors" data-es="Inicio" data-en="Home">Home</a>
-    
-    <a href="#about" class="text-slate-600 hover:text-brand-blue font-bold text-lg border-b border-slate-50 pb-2 transition-colors" data-es="Nosotros" data-en="About Us">About Us</a>
-    
-    <a href="#services" class="text-slate-600 hover:text-brand-blue font-bold text-lg border-b border-slate-50 pb-2 transition-colors" data-es="Servicios" data-en="Services">Services</a>
-    
-    <a href="#donate" class="bg-brand-green text-white px-6 py-4 rounded-xl font-black text-center mt-4 shadow-md hover:bg-emerald-600 hover:shadow-lg transition-all" data-es="Donar Ahora" data-en="Donate Now">Donate Now</a>
+    <div id="mobile-menu" class="hidden md:hidden fixed top-[72px] left-0 w-full bg-white shadow-2xl border-t border-slate-100 py-8 px-8 flex-col gap-6 z-[9999] rounded-b-3xl">
+    <a href="#home" class="text-slate-600 hover:text-brand-blue font-bold text-xl border-b border-slate-50 pb-3" data-es="Inicio" data-en="Home">Home</a>
+    <a href="#about" class="text-slate-600 hover:text-brand-blue font-bold text-xl border-b border-slate-50 pb-3" data-es="Nosotros" data-en="About Us">About Us</a>
+    <a href="#services" class="text-slate-600 hover:text-brand-blue font-bold text-xl border-b border-slate-50 pb-3" data-es="Servicios" data-en="Services">Services</a>
+    <a href="#donate" class="bg-brand-green text-white px-6 py-4 rounded-2xl font-black text-center mt-4 shadow-lg hover:bg-emerald-600 active:scale-95 transition-all" data-es="Donar Ahora" data-en="Donate Now">Donate Now</a>
 </div>
         </nav> 
 
@@ -813,43 +809,52 @@
         </div>
     </div>
 <script>
-    // ==========================================
-// LÓGICA DEL MENÚ MÓVIL (Versión Profesional)
-// ==========================================
+ // LÓGICA DEL MENÚ MÓVIL REFORZADA
 const mobileBtn = document.getElementById('mobile-menu-btn');
 const mobileMenu = document.getElementById('mobile-menu');
 
 if (mobileBtn && mobileMenu) {
-    // Todos los enlaces dentro del menú móvil
-    const mobileLinks = mobileMenu.querySelectorAll('a');
     const icon = mobileBtn.querySelector('i');
+    const mobileLinks = mobileMenu.querySelectorAll('a');
 
-    // 1. Abrir/Cerrar menú al tocar el botón
-    mobileBtn.addEventListener('click', () => {
-        mobileMenu.classList.toggle('hidden');
+    mobileBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); // Evita que el clic se propague
         
-        // Animación del icono (Cambia de ☰ a X)
-        if (icon.classList.contains('fa-bars')) {
-            icon.classList.remove('fa-bars');
-            icon.classList.add('fa-xmark');
+        const isHidden = mobileMenu.classList.contains('hidden');
+        
+        if (isHidden) {
+            // Abrir menú
+            mobileMenu.classList.remove('hidden');
+            mobileMenu.classList.add('flex');
+            icon.classList.replace('fa-bars', 'fa-xmark');
         } else {
-            icon.classList.remove('fa-xmark');
-            icon.classList.add('fa-bars');
+            // Cerrar menú
+            mobileMenu.classList.add('hidden');
+            mobileMenu.classList.remove('flex');
+            icon.classList.replace('fa-xmark', 'fa-bars');
         }
     });
 
-    // 2. Cerrar el menú automáticamente al hacer clic en una sección (Mejora UX)
+    // Cerrar automáticamente al hacer clic en un enlace
     mobileLinks.forEach(link => {
         link.addEventListener('click', () => {
-            mobileMenu.classList.add('hidden'); // Oculta el menú
-            
-            // Restaura el icono de hamburguesa
-            icon.classList.remove('fa-xmark');
-            icon.classList.add('fa-bars');
+            mobileMenu.classList.add('hidden');
+            mobileMenu.classList.remove('flex');
+            icon.classList.replace('fa-xmark', 'fa-bars');
         });
+    });
+
+    // Cerrar si hacen clic fuera del menú (para mayor profesionalismo)
+    document.addEventListener('click', (e) => {
+        if (!mobileMenu.contains(e.target) && !mobileBtn.contains(e.target)) {
+            mobileMenu.classList.add('hidden');
+            mobileMenu.classList.remove('flex');
+            icon.classList.replace('fa-xmark', 'fa-bars');
+        }
     });
 }
 </script>
 </body>
 </html>
+
 
