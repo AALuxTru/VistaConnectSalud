@@ -134,16 +134,7 @@
 }
 
         // --- LÓGICA DEL MENÚ MÓVIL (Faltaba) ---
-        document.addEventListener('DOMContentLoaded', () => {
-            const mobileBtn = document.getElementById('mobile-menu-btn');
-            const mobileMenu = document.getElementById('mobile-menu');
-            if(mobileBtn && mobileMenu) {
-                mobileBtn.addEventListener('click', () => {
-                    mobileMenu.classList.toggle('hidden');
-                    mobileMenu.classList.toggle('flex');
-                });
-            }
-        });
+        
 
 
         // --- LÓGICA DE DONACIONES Y MODAL ---
@@ -809,51 +800,51 @@
         </div>
     </div>
 <script>
- // LÓGICA DEL MENÚ MÓVIL REFORZADA
-const mobileBtn = document.getElementById('mobile-menu-btn');
-const mobileMenu = document.getElementById('mobile-menu');
+    // LÓGICA DEL MENÚ MÓVIL REFORZADA UNIFICADA
+    document.addEventListener('DOMContentLoaded', () => {
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
 
-if (mobileBtn && mobileMenu) {
-    const icon = mobileBtn.querySelector('i');
-    const mobileLinks = mobileMenu.querySelectorAll('a');
+        if (mobileBtn && mobileMenu) {
+            const icon = mobileBtn.querySelector('i');
+            const mobileLinks = mobileMenu.querySelectorAll('a');
 
-    mobileBtn.addEventListener('click', (e) => {
-        e.stopPropagation(); // Evita que el clic se propague
-        
-        const isHidden = mobileMenu.classList.contains('hidden');
-        
-        if (isHidden) {
-            // Abrir menú
-            mobileMenu.classList.remove('hidden');
-            mobileMenu.classList.add('flex');
-            icon.classList.replace('fa-bars', 'fa-xmark');
-        } else {
-            // Cerrar menú
-            mobileMenu.classList.add('hidden');
-            mobileMenu.classList.remove('flex');
-            icon.classList.replace('fa-xmark', 'fa-bars');
+            // Abrir / Cerrar Menú
+            mobileBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isHidden = mobileMenu.classList.contains('hidden');
+                
+                if (isHidden) {
+                    mobileMenu.classList.remove('hidden');
+                    mobileMenu.classList.add('flex');
+                    icon.classList.replace('fa-bars', 'fa-xmark');
+                } else {
+                    mobileMenu.classList.add('hidden');
+                    mobileMenu.classList.remove('flex');
+                    icon.classList.replace('fa-xmark', 'fa-bars');
+                }
+            });
+
+            // Cerrar automáticamente al hacer clic en un enlace
+            mobileLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                    mobileMenu.classList.remove('flex');
+                    icon.classList.replace('fa-xmark', 'fa-bars');
+                });
+            });
+
+            // Cerrar si hacen clic fuera del menú
+            document.addEventListener('click', (e) => {
+                if (!mobileMenu.contains(e.target) && !mobileBtn.contains(e.target)) {
+                    mobileMenu.classList.add('hidden');
+                    mobileMenu.classList.remove('flex');
+                    icon.classList.replace('fa-xmark', 'fa-bars');
+                }
+            });
         }
     });
-
-    // Cerrar automáticamente al hacer clic en un enlace
-    mobileLinks.forEach(link => {
-        link.addEventListener('click', () => {
-            mobileMenu.classList.add('hidden');
-            mobileMenu.classList.remove('flex');
-            icon.classList.replace('fa-xmark', 'fa-bars');
-        });
-    });
-
-    // Cerrar si hacen clic fuera del menú (para mayor profesionalismo)
-    document.addEventListener('click', (e) => {
-        if (!mobileMenu.contains(e.target) && !mobileBtn.contains(e.target)) {
-            mobileMenu.classList.add('hidden');
-            mobileMenu.classList.remove('flex');
-            icon.classList.replace('fa-xmark', 'fa-bars');
-        }
-    });
-}
-</script>
+    </script>
 </body>
 </html>
 
