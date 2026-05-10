@@ -331,8 +331,10 @@
     <div id="mobile-menu" class="hidden md:hidden fixed top-[72px] left-0 w-full bg-white shadow-2xl border-t border-slate-100 py-8 px-8 flex-col gap-6 z-[9999] rounded-b-3xl">
     <a href="#home" class="text-slate-600 hover:text-brand-blue font-bold text-xl border-b border-slate-50 pb-3" data-es="Inicio" data-en="Home">Home</a>
     <a href="#about" class="text-slate-600 hover:text-brand-blue font-bold text-xl border-b border-slate-50 pb-3" data-es="Nosotros" data-en="About Us">About Us</a>
-    <a href="#services" class="text-slate-600 hover:text-brand-blue font-bold text-xl border-b border-slate-50 pb-3" data-es="Servicios" data-en="Services">Services</a>
-    <a href="#donate" class="bg-brand-green text-white px-6 py-4 rounded-2xl font-black text-center mt-4 shadow-lg hover:bg-emerald-600 active:scale-95 transition-all" data-es="Donar Ahora" data-en="Donate Now">Donate Now</a>
+    <a href="#programs" class="text-slate-600 hover:text-brand-blue font-bold text-xl border-b border-slate-50 pb-3" data-es="Servicios" data-en="Services">Services</a>
+    <button onclick="toggleDonationModal()" class="bg-brand-green text-white px-6 py-4 rounded-2xl font-black text-center mt-4 shadow-lg hover:bg-emerald-600 active:scale-95 transition-all" data-es="Donar Ahora" data-en="Donate Now">
+        Donate Now
+    </button>
 </div>
         </nav> 
 
@@ -792,10 +794,10 @@
                 </div>
 
                 <div id="zelleSection" class="payment-section hidden text-center py-8 bg-purple-50 rounded-2xl border border-purple-100">
-                    <p class="text-sm font-bold text-purple-900 mb-2">Send Zelle donation to:</p>
-                    <p class="text-xl font-black text-purple-700 select-all">donations@connectionsalud.org</p>
-                    <p class="text-[10px] text-purple-400 mt-4 px-4">Please include "Donation" in the memo field.</p>
-                </div>
+    <p class="text-sm font-bold text-purple-900 mb-2">Send Zelle donation to:</p>
+    <p class="text-sm sm:text-xl font-black text-purple-700 select-all break-all px-2">donations@connectionsalud.org</p>
+    <p class="text-[10px] text-purple-400 mt-4 px-4">Please include "Donation" in the memo field.</p>
+</div>
             </div>
         </div>
     </div>
