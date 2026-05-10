@@ -86,31 +86,65 @@
                     }
                         }
 
-        const BACKEND_URL = "https://connectsaludmodulopruebas.onrender.com"; 
-        const STRIPE_PUBLISHABLE_KEY = 'pk_test_TU_CLAVE_AQUI'; 
+                const BACKEND_URL = "https://connectsaludmodulopruebas.onrender.com"; 
+                const STRIPE_PUBLISHABLE_KEY = 'pk_live_51TUeC663VlQJUBogMOGuJ063jRMNhMr0Eb9IEsb2O1eIfAGVKkdovhH8dS9ZsUX5l2pjhYhqgIk6IjkqFDYiWZxM00fwWWejlV'; 
 
         let stripe, elements, cardElement;
-        let currentLang = 'en'; // Estado global del idioma
+        let currentLang = 'en'; 
 
-        // --- SISTEMA BILINGÜE ---
-        function toggleLanguage() {
-            currentLang = currentLang === 'en' ? 'es' : 'en';
-            
-            // Actualizar texto del botón en Nav
-            const langText = document.getElementById('lang-text');
-            if(langText) langText.innerText = currentLang === 'en' ? 'ES' : 'EN';
+        // --- SISTEMA BILINGÜE CORREGIDO ---
+        // --- SISTEMA BILINGÜE CORREGIDO Y SEGURO ---
+            function toggleLanguage() {
+    const html = document.documentElement;
+    const isEn = html.lang === 'en';
+    const newLang = isEn ? 'es' : 'en';
+    html.lang = newLang;
 
-            // Traducir elementos con atributo data-es
-            const elements = document.querySelectorAll('[data-es]');
-            elements.forEach(el => {
-                if (currentLang === 'es') {
-                    if (!el.hasAttribute('data-en')) el.setAttribute('data-en', el.innerHTML);
-                    el.innerHTML = el.getAttribute('data-es');
-                } else {
-                    el.innerHTML = el.getAttribute('data-en');
-                }
-            });
+    // 1. Actualizar el texto del botón (ES / EN)
+    const langText = document.getElementById('lang-text');
+    if (langText) {
+        langText.textContent = isEn ? 'EN' : 'ES';
+    }
+
+    // 2. Traducir todos los elementos con data-es
+    document.querySelectorAll('[data-es]').forEach(el => {
+        // Obtenemos el texto según el nuevo idioma
+        // Si vamos a ES, buscamos 'data-es'. Si vamos a EN, buscamos 'data-en'
+        let translatedText = newLang === 'es' 
+            ? el.getAttribute('data-es') 
+            : el.getAttribute('data-en');
+
+        // IMPORTANTE: Si el texto traducido no existe (null), no borramos el contenido
+        if (translatedText) {
+            if (el.hasAttribute('data-allow-html')) {
+                el.innerHTML = translatedText;
+            } else {
+                el.textContent = translatedText;
+            }
         }
+    });
+
+    // 3. Traducir placeholders de formularios
+    document.querySelectorAll('[data-placeholder-es]').forEach(input => {
+        const placeholder = newLang === 'es' 
+            ? input.getAttribute('data-placeholder-es') 
+            : input.getAttribute('data-placeholder-en');
+        if (placeholder) input.placeholder = placeholder;
+    });
+}
+
+        // --- LÓGICA DEL MENÚ MÓVIL (Faltaba) ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            if(mobileBtn && mobileMenu) {
+                mobileBtn.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                    mobileMenu.classList.toggle('flex');
+                });
+            }
+        });
+
 
         // --- LÓGICA DE DONACIONES Y MODAL ---
         document.addEventListener('DOMContentLoaded', () => {
@@ -240,34 +274,40 @@
                 recaptchaToken: recaptchaToken // <- Enviamos el token al backend
             };
 
-            try {
-                const response = await fetch(`${BACKEND_URL}/api/contact`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(formData)
-                });
-                const result = await response.json();
-                if(result.success) {
-                    alert("Thank you! Your message has been received.");
-                    event.target.reset(); 
-                }
-            } catch (error) { alert("Error sending message."); } 
-            finally { btn.disabled = false; btn.innerHTML = originalText; }
+                    // ... dentro de handleContactSubmit ...
+        try {
+            const response = await fetch(`${BACKEND_URL}/api/contact`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+            const result = await response.json();
+            if(result.success) {
+                alert(currentLang === 'en' ? "Thank you! Your message has been received." : "¡Gracias! Hemos recibido tu mensaje.");
+                event.target.reset();
+                grecaptcha.reset(); // Importante resetear el captcha tras enviar
+            } else {
+                alert(currentLang === 'en' ? "Error: " + result.error : "Error: " + result.error);
+            }
+        } catch (error) { 
+            alert(currentLang === 'en' ? "Error sending message." : "Error enviando el mensaje."); 
+        } 
+
         }
     </script>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FF7Q54SK5L"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-XXXXXXXXXX');
+      gtag('config', 'G-FF7Q54SK5L');
     </script>
 </head>
 <body class="text-slate-700 bg-white antialiased scroll-smooth">
 
     <nav class="relative z-50 bg-white shadow-sm border-b border-slate-100">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center py-3 md:py-6">
+        <div class="flex justify-between items-center py-3 md:py-0">
             
             <div class="flex items-center">
                 <a href="#" class="flex items-center w-36 md:w-64">
@@ -277,9 +317,9 @@
 
             <div class="flex items-center gap-2 md:gap-8">
                 <div class="hidden md:flex items-center gap-8">
-                    <a href="#about" class="text-slate-600 font-bold hover:text-brand-blue transition" data-es="Nosotros">About Us</a>
-                    <a href="#programs" class="text-slate-600 font-bold hover:text-brand-blue transition" data-es="Programas">Future Programs</a>
-                    <a href="#contact" class="text-slate-600 font-bold hover:text-brand-blue transition" data-es="Contacto">Contact</a>
+                    <a href="#about" class="text-slate-600 font-bold hover:text-brand-blue transition" data-es="Nosotros" data-en="About us">About Us</a>
+                    <a href="#programs" class="text-slate-600 font-bold hover:text-brand-blue transition" data-es="Programas" data-en="Programs">Future Programs</a>
+                    <a href="#contact" class="text-slate-600 font-bold hover:text-brand-blue transition" data-es="Contacto" data-en="Contact">Contact</a>
                 </div>
 
                 <button onclick="toggleLanguage()" class="flex items-center gap-2 px-2 py-1 md:px-3 md:py-2 text-slate-600 font-bold border border-slate-200 rounded-xl hover:bg-slate-50 text-sm md:text-base">
@@ -287,7 +327,7 @@
                     <span id="lang-text">ES</span>
                 </button>
 
-                <button onclick="toggleDonationModal()" data-es="Donar" class="bg-brand-blue text-white px-4 md:px-6 py-2 md:py-3 text-sm md:text-base rounded-full font-black shadow-lg hover:bg-blue-700 transition transform hover:-translate-y-0.5">
+                <button onclick="toggleDonationModal()" data-es="Donar" data-en="Donate" class="bg-brand-blue text-white px-4 md:px-6 py-2 md:py-3 text-sm md:text-base rounded-full font-black shadow-lg hover:bg-blue-700 transition transform hover:-translate-y-0.5">
                     Donate
                 </button>
                 
@@ -297,30 +337,32 @@
             </div>
         </div>
     </div>
-        </div> <div id="mobile-menu" class="hidden flex-col bg-white border-t border-slate-100 absolute w-full left-0 top-full shadow-2xl z-50 p-6 gap-6 md:hidden">
-            <a href="#about" class="text-slate-600 font-bold hover:text-brand-blue transition text-lg" data-es="Nosotros">About Us</a>
-            <a href="#programs" class="text-slate-600 font-bold hover:text-brand-blue transition text-lg" data-es="Programas">Future Programs</a>
-            <a href="#contact" class="text-slate-600 font-bold hover:text-brand-blue transition text-lg" data-es="Contacto">Contact</a>
+    </div> <div id="mobile-menu" class="hidden flex-col bg-white border-t border-slate-100 absolute w-full left-0 top-full shadow-2xl z-50 p-6 gap-6 md:hidden">
+            <a href="#about" class="text-slate-600 font-bold hover:text-brand-blue transition text-lg" data-es="Nosotros" data-en="About us">About Us</a>
+            <a href="#programs" class="text-slate-600 font-bold hover:text-brand-blue transition text-lg" data-es="Programas" data-en="Programs">Future Programs</a>
+            <a href="#contact" class="text-slate-600 font-bold hover:text-brand-blue transition text-lg" data-es="Contacto" data-en="Contact">Contact</a>
         </div>
-</nav>
+        </nav> 
 
     <section class="relative bg-brand-blue pt-16 md:pt-20 pb-20 md:pb-32 overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="grid md:grid-cols-2 gap-10 md:gap-12 items-center">
                 <div class="min-w-0">
                     <h1 class="font-heading text-4xl sm:text-5xl md:text-6xl font-extrabold text-white leading-tight mb-6 md:mb-8" 
-                        data-es="Conectando Comunidades con la <span class='text-brand-green'>Salud, el Conocimiento</span> y las Oportunidades">
-                        Connecting Communities to <span class="text-brand-green">Health, Knowledge</span>, and Opportunity
-                    </h1>
+    data-allow-html
+    data-es="Conectando Comunidades con la <span class='text-brand-green'>Salud, el Conocimiento</span> y las Oportunidades"
+    data-en="Connecting Communities to <span class='text-brand-green'>Health, Knowledge</span>, and Opportunity">
+    Connecting Communities to <span class="text-brand-green">Health, Knowledge</span>, and Opportunity
+</h1>
                     <p class="text-base md:text-lg text-blue-100 mb-8 md:mb-10 leading-relaxed max-w-lg" 
                        data-es="Connection Salud Network, Inc. es una nueva organización sin fines de lucro dedicada a ampliar el acceso a servicios de prevención y educación en salud.">
                         Connection Salud Network, Inc. is a new nonprofit organization dedicated to expanding access to prevention services and health education.
                     </p>
                     <div class="flex flex-wrap gap-4">
                         <a href="#about" class="bg-brand-blue text-white px-6 md:px-8 py-3 md:py-4 rounded-full font-bold shadow-lg border border-white/20 hover:bg-blue-700 transition" 
-                           data-es="Nuestra Misión">Our Mission</a>
+                           data-es="Nuestra Misión" data-en="Our Mission">Our Mission</a>
                         <a href="#contact" class="bg-white text-brand-blue border-2 border-brand-blue px-6 md:px-8 py-3 md:py-4 rounded-full font-bold hover:bg-brand-light transition" 
-                           data-es="Solicitar Información">Request Information</a>
+                           data-es="Solicitar Información" data-en="Request Information">Request Information</a>
                     </div>
                 </div>
                 
@@ -356,12 +398,12 @@
     </section>
 
     <div id="about" class="max-w-4xl mx-auto px-4 text-center mt-24">
-    <h2 class="font-heading text-4xl font-bold text-slate-900 mb-8" data-es="Nuestro Comienzo">Our Beginning</h2>
+    <h2 class="font-heading text-4xl font-bold text-slate-900 mb-8" data-es="Nuestro Comienzo" data-en="Our Beginning">Our Beginning</h2>
     <div class="prose prose-lg text-slate-600 mx-auto leading-relaxed">
-        <p class="mb-6 italic" data-es="&quot;Connection Salud Network, Inc. fue fundada con una creencia simple pero poderosa: que cada persona merece acceso al conocimiento, el apoyo y los recursos necesarios para vivir una vida saludable y empoderada.&quot;">
+        <p class="mb-6 italic" data-es="&quot;Connection Salud Network, Inc. fue fundada con una creencia simple pero poderosa: que cada persona merece acceso al conocimiento, el apoyo y los recursos necesarios para vivir una vida saludable y empoderada.&quot;" data-en="&quot;Connection Salud Network, Inc. was founded with a simple but powerful belief: that every person deserves access to the knowledge, support, and resources needed to live a healthy and empowered life.&quot;">
             "Connection Salud Network, Inc. was founded with a simple but powerful belief: that every person deserves access to the knowledge, support, and resources needed to live a healthy and empowered life."
         </p>
-        <p data-es="Nuestros fundadores presenciaron de primera mano los desafíos que enfrentan las comunidades vulnerables: barreras para la atención y falta de educación culturalmente receptiva. Esto inspiró la creación de una organización dedicada a cerrar esas brechas.">
+        <p data-es="Nuestros fundadores presenciaron de primera mano los desafíos que enfrentan las comunidades vulnerables: barreras para la atención y falta de educación culturalmente receptiva. Esto inspiró la creación de una organización dedicada a cerrar esas brechas." data-en="Our founders witnessed firsthand the challenges faced by vulnerable communities—barriers to care and a lack of culturally responsive education. This inspired the creation of an organization dedicated to bridging those divides.">
             Our founders witnessed firsthand the challenges faced by vulnerable communities—barriers to care and a lack of culturally responsive education. This inspired the creation of an organization dedicated to bridging those divides.
         </p>
     </div>
@@ -411,67 +453,93 @@
 
         <div class="max-w-7xl mx-auto px-4 mt-24 mb-24">
     <h3 class="text-center font-heading text-3xl font-bold mb-12" data-es="Nuestros Valores">Our Values</h3>
-    <div class="flex flex-col gap-4 max-w-4xl mx-auto">
-        <details class="group bg-white rounded-2xl border border-slate-200 shadow-sm p-6 cursor-pointer transition-all open:border-brand-blue open:shadow-md">
-            <summary class="font-bold text-lg flex justify-between items-center text-slate-800 list-none outline-none">
-                <span class="flex items-center gap-4" data-es="<i class='fa-solid fa-scale-balanced text-brand-blue text-2xl w-8'></i> Equidad">
-                    <i class="fa-solid fa-scale-balanced text-brand-blue text-2xl w-8"></i> Equity
-                </span>
-                <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
-            </summary>
-            <p class="mt-4 text-slate-600 ml-12" data-es="Garantizar que todos tengan un acceso justo a los recursos de salud, independientemente de su origen o circunstancias.">
-                Ensuring everyone has fair access to health resources, regardless of their background or circumstances.
-            </p>
-        </details>
+    
+<div class="flex flex-col gap-4 max-w-4xl mx-auto">
+    <details onmouseenter="this.setAttribute('open', '')" onmouseleave="this.removeAttribute('open')" class="group bg-white rounded-2xl border border-slate-200 shadow-sm p-6 cursor-pointer transition-all open:border-brand-blue open:shadow-md">
+        <summary class="font-bold text-lg flex justify-between items-center text-slate-800 list-none outline-none">
+            <span class="flex items-center gap-4" 
+                  data-allow-html 
+                  data-es="<i class='fa-solid fa-scale-balanced text-brand-blue text-2xl w-8'></i> Equidad"
+                  data-en="<i class='fa-solid fa-scale-balanced text-brand-blue text-2xl w-8'></i> Equity">
+                <i class="fa-solid fa-scale-balanced text-brand-blue text-2xl w-8"></i> Equity
+            </span>
+            <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
+        </summary>
+        <p class="mt-4 text-slate-600 ml-12" 
+           data-es="Garantizar que todos tengan un acceso justo a los recursos de salud, independientemente de su origen o circunstancias."
+           data-en="Ensuring everyone has fair access to health resources, regardless of their background or circumstances.">
+            Ensuring everyone has fair access to health resources, regardless of their background or circumstances.
+        </p>
+    </details>
 
-        <details class="group bg-white rounded-2xl border border-slate-200 shadow-sm p-6 cursor-pointer transition-all open:border-brand-blue open:shadow-md">
-            <summary class="font-bold text-lg flex justify-between items-center text-slate-800 list-none outline-none">
-                <span class="flex items-center gap-4" data-es="<i class='fa-solid fa-hand-holding-heart text-brand-blue text-2xl w-8'></i> Respeto">
-                    <i class="fa-solid fa-hand-holding-heart text-brand-blue text-2xl w-8"></i> Respect
-                </span>
-                <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
-            </summary>
-            <p class="mt-4 text-slate-600 ml-12" data-es="Valorar la dignidad de cada individuo y fomentar un entorno de inclusión y comprensión.">
-                Valuing the dignity of every individual and fostering an environment of inclusion and understanding.
-            </p>
-        </details>
+    <details onmouseenter="this.setAttribute('open', '')" onmouseleave="this.removeAttribute('open')" class="group bg-white rounded-2xl border border-slate-200 shadow-sm p-6 cursor-pointer transition-all open:border-brand-blue open:shadow-md">
+        <summary class="font-bold text-lg flex justify-between items-center text-slate-800 list-none outline-none">
+            <span class="flex items-center gap-4" 
+                  data-allow-html 
+                  data-es="<i class='fa-solid fa-hand-holding-heart text-brand-blue text-2xl w-8'></i> Respeto"
+                  data-en="<i class='fa-solid fa-hand-holding-heart text-brand-blue text-2xl w-8'></i> Respect">
+                <i class="fa-solid fa-hand-holding-heart text-brand-blue text-2xl w-8"></i> Respect
+            </span>
+            <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
+        </summary>
+        <p class="mt-4 text-slate-600 ml-12" 
+           data-es="Valorar la dignidad de cada individuo y fomentar un entorno de inclusión y comprensión."
+           data-en="Valuing the dignity of every individual and fostering an environment of inclusion and understanding.">
+            Valuing the dignity of every individual and fostering an environment of inclusion and understanding.
+        </p>
+    </details>
 
-        <details class="group bg-white rounded-2xl border border-slate-200 shadow-sm p-6 cursor-pointer transition-all open:border-brand-blue open:shadow-md">
-            <summary class="font-bold text-lg flex justify-between items-center text-slate-800 list-none outline-none">
-                <span class="flex items-center gap-4" data-es="<i class='fa-solid fa-users text-brand-blue text-2xl w-8'></i> Comunidad">
-                    <i class="fa-solid fa-users text-brand-blue text-2xl w-8"></i> Community
-                </span>
-                <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
-            </summary>
-            <p class="mt-4 text-slate-600 ml-12" data-es="Trabajar juntos para construir redes de apoyo sólidas que fortalezcan el bienestar colectivo.">
-                Working together to build strong support networks that strengthen collective well-being.
-            </p>
-        </details>
+    <details onmouseenter="this.setAttribute('open', '')" onmouseleave="this.removeAttribute('open')" class="group bg-white rounded-2xl border border-slate-200 shadow-sm p-6 cursor-pointer transition-all open:border-brand-blue open:shadow-md">
+        <summary class="font-bold text-lg flex justify-between items-center text-slate-800 list-none outline-none">
+            <span class="flex items-center gap-4" 
+                  data-allow-html 
+                  data-es="<i class='fa-solid fa-users text-brand-blue text-2xl w-8'></i> Comunidad"
+                  data-en="<i class='fa-solid fa-users text-brand-blue text-2xl w-8'></i> Community">
+                <i class="fa-solid fa-users text-brand-blue text-2xl w-8"></i> Community
+            </span>
+            <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
+        </summary>
+        <p class="mt-4 text-slate-600 ml-12" 
+           data-es="Trabajar juntos para construir redes de apoyo sólidas que fortalezcan el bienestar colectivo."
+           data-en="Working together to build strong support networks that strengthen collective well-being.">
+            Working together to build strong support networks that strengthen collective well-being.
+        </p>
+    </details>
 
-        <details class="group bg-white rounded-2xl border border-slate-200 shadow-sm p-6 cursor-pointer transition-all open:border-brand-blue open:shadow-md">
-            <summary class="font-bold text-lg flex justify-between items-center text-slate-800 list-none outline-none">
-                <span class="flex items-center gap-4" data-es="<i class='fa-solid fa-shield-heart text-brand-blue text-2xl w-8'></i> Integridad">
-                    <i class="fa-solid fa-shield-heart text-brand-blue text-2xl w-8"></i> Integrity
-                </span>
-                <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
-            </summary>
-            <p class="mt-4 text-slate-600 ml-12" data-es="Actuar con honestidad, transparencia y ética en todos nuestros servicios y relaciones.">
-                Acting with honesty, transparency, and ethics in all our services and relationships.
-            </p>
-        </details>
+    <details onmouseenter="this.setAttribute('open', '')" onmouseleave="this.removeAttribute('open')" class="group bg-white rounded-2xl border border-slate-200 shadow-sm p-6 cursor-pointer transition-all open:border-brand-blue open:shadow-md">
+        <summary class="font-bold text-lg flex justify-between items-center text-slate-800 list-none outline-none">
+            <span class="flex items-center gap-4" 
+                  data-allow-html 
+                  data-es="<i class='fa-solid fa-shield-heart text-brand-blue text-2xl w-8'></i> Integridad"
+                  data-en="<i class='fa-solid fa-shield-heart text-brand-blue text-2xl w-8'></i> Integrity">
+                <i class="fa-solid fa-shield-heart text-brand-blue text-2xl w-8"></i> Integrity
+            </span>
+            <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
+        </summary>
+        <p class="mt-4 text-slate-600 ml-12" 
+           data-es="Actuar con honestidad, transparencia y ética en todos nuestros servicios y relaciones."
+           data-en="Acting with honesty, transparency, and ethics in all our services and relationships.">
+            Acting with honesty, transparency, and ethics in all our services and relationships.
+        </p>
+    </details>
 
-        <details class="group bg-white rounded-2xl border border-slate-200 shadow-sm p-6 cursor-pointer transition-all open:border-brand-blue open:shadow-md">
-            <summary class="font-bold text-lg flex justify-between items-center text-slate-800 list-none outline-none">
-                <span class="flex items-center gap-4" data-es="<i class='fa-solid fa-heart-pulse text-brand-blue text-2xl w-8'></i> Compasión">
-                    <i class="fa-solid fa-heart-pulse text-brand-blue text-2xl w-8"></i> Compassion
-                </span>
-                <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
-            </summary>
-            <p class="mt-4 text-slate-600 ml-12" data-es="Brindar apoyo con empatía y calidez humana a quienes más lo necesitan.">
-                Providing support with empathy and human warmth to those who need it most.
-            </p>
-        </details>
-    </div>
+    <details onmouseenter="this.setAttribute('open', '')" onmouseleave="this.removeAttribute('open')" class="group bg-white rounded-2xl border border-slate-200 shadow-sm p-6 cursor-pointer transition-all open:border-brand-blue open:shadow-md">
+        <summary class="font-bold text-lg flex justify-between items-center text-slate-800 list-none outline-none">
+            <span class="flex items-center gap-4" 
+                  data-allow-html 
+                  data-es="<i class='fa-solid fa-heart-pulse text-brand-blue text-2xl w-8'></i> Compasión"
+                  data-en="<i class='fa-solid fa-heart-pulse text-brand-blue text-2xl w-8'></i> Compassion">
+                <i class="fa-solid fa-heart-pulse text-brand-blue text-2xl w-8"></i> Compassion
+            </span>
+            <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
+        </summary>
+        <p class="mt-4 text-slate-600 ml-12" 
+           data-es="Brindar apoyo con empatía y calidez humana a quienes más lo necesitan."
+           data-en="Providing support with empathy and human warmth to those who need it most.">
+            Providing support with empathy and human warmth to protection those who need it most.
+        </p>
+    </details>
+</div>
 </div>
 
     <section id="programs" class="py-24 bg-slate-50">
@@ -632,7 +700,7 @@
                 I confirm that I will not include medical or health information in this message. 
             </label>
         </div>
-        <div class="g-recaptcha mb-4 flex justify-center transform scale-[0.85] sm:scale-100 origin-center" data-sitekey="TU_CLAVE_DE_SITIO_PUBLICA"></div>
+        <div class="g-recaptcha mb-4 flex justify-center transform scale-[0.85] sm:scale-100 origin-center" data-sitekey="6LelFt8sAAAAAJ"></div>
         <button type="submit" data-es="Solicitar Información" class="w-full bg-brand-green text-white font-bold py-4 rounded-xl shadow-lg hover:bg-emerald-600 transition">Request Information</button>
     </form>
 </div>
