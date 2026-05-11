@@ -156,14 +156,15 @@
         });
 
         function toggleDonationModal() {
-            const modal = document.getElementById('donationModal');
-            modal.classList.toggle('hidden');
-            modal.classList.toggle('flex');
-            if(!modal.classList.contains('hidden')) {
-                if (!stripe) initStripe();
-                if (!document.getElementById('paypal-button-container').hasChildNodes()) initPayPal();
-            }
-        }
+    const modal = document.getElementById('donationModal');
+    modal.classList.toggle('hidden');
+    modal.classList.toggle('flex');
+    if(!modal.classList.contains('hidden')) {
+        if (!stripe) initStripe();
+        // PARCHE TEMPORAL: Comentado hasta habilitar PayPal
+        // if (!document.getElementById('paypal-button-container').hasChildNodes()) initPayPal();
+    }
+}
 
         function showPayment(method) {
             document.querySelectorAll('.payment-section').forEach(el => el.classList.add('hidden'));
@@ -694,7 +695,7 @@
                 I confirm that I will not include medical or health information in this message. 
             </label>
         </div>
-        <div class="g-recaptcha mb-4 flex justify-center transform scale-[0.85] sm:scale-100 origin-center" data-sitekey="6LfMSeUsAAAAAMLHggpm5K1oH3c6uj123ZfkCA8P"></div>
+        <div class="g-recaptcha mb-4 flex justify-center transform scale-[0.85] sm:scale-100 origin-center" data-sitekey="6LelFt8sAAAAAJBlnkLUGyGKfyLIXmVXaTkhOUv0"></div>
         <button type="submit" data-es="Solicitar Información" class="w-full bg-brand-green text-white font-bold py-4 rounded-xl shadow-lg hover:bg-emerald-600 transition">Request Information</button>
     </form>
 </div>
@@ -794,10 +795,11 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-3 gap-4 mb-8">
+                <div class="grid grid-cols-1 gap-4 mb-8">
                     <button id="btn-card" onclick="showPayment('card')" class="pay-btn ring-4 ring-brand-blue bg-blue-50 border border-slate-200 rounded-xl p-4 font-bold flex flex-col items-center"><i class="fa-solid fa-credit-card mb-2"></i> Card</button>
-                    <button id="btn-paypal" onclick="showPayment('paypal')" class="pay-btn border border-slate-200 rounded-xl p-4 font-bold flex flex-col items-center"><i class="fa-brands fa-paypal mb-2"></i> PayPal</button>
-                    <button id="btn-zelle" onclick="showPayment('zelle')" class="pay-btn border border-slate-200 rounded-xl p-4 font-bold flex flex-col items-center"><i class="fa-solid fa-bolt mb-2"></i> Zelle</button>
+    
+                    <button id="btn-paypal" onclick="showPayment('paypal')" class="hidden pay-btn border border-slate-200 rounded-xl p-4 font-bold flex flex-col items-center"><i class="fa-brands fa-paypal mb-2"></i> PayPal</button>
+                    <button id="btn-zelle" onclick="showPayment('zelle')" class="hidden pay-btn border border-slate-200 rounded-xl p-4 font-bold flex flex-col items-center"><i class="fa-solid fa-bolt mb-2"></i> Zelle</button>
                 </div>
 
                 <div id="cardSection" class="payment-section">
