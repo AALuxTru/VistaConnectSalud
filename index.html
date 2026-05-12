@@ -255,7 +255,7 @@
 
     // --- CONFIGURACIÓN DEL CRONÓMETRO (TIMEOUT) ---
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 20000); // 12 segundos de espera máxima
+    const timeoutId = setTimeout(() => controller.abort(), 25000); // 20 segundos de espera máxima
 
     // 3. Activar estado de carga
     btn.disabled = true;
