@@ -235,57 +235,66 @@
 
         // --- CONTACTO ---
         async function handleContactSubmit(event) {
-            event.preventDefault(); 
-            const btn = event.target.querySelector('button[type="submit"]');
-            const originalText = btn.innerHTML;
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Sending...';
+    event.preventDefault(); 
+    const btn = event.target.querySelector('button[type="submit"]');
+    const originalText = btn.innerHTML;
 
-            // Validación extra del Checkbox
-            const medicalCheckbox = document.getElementById('medical-disclaimer');
-            if (!medicalCheckbox.checked) {
-                alert(currentLang === 'en' ? "You must confirm the medical disclaimer." : "Debes confirmar el descargo de responsabilidad médico.");
-                btn.disabled = false;
-                btn.innerHTML = originalText;
-                return;
-            }
+    // 1. Validación del Disclaimer
+    const medicalCheckbox = document.getElementById('medical-disclaimer');
+    if (!medicalCheckbox.checked) {
+        alert(currentLang === 'en' ? "You must confirm the medical disclaimer." : "Debes confirmar el descargo de responsabilidad médico.");
+        return; 
+    }
 
-            const recaptchaToken = grecaptcha.getResponse();
-            if (!recaptchaToken) {
-                alert(currentLang === 'en' ? "Please complete the reCAPTCHA." : "Por favor, completa el reCAPTCHA.");
-                btn.disabled = false;
-                btn.innerHTML = originalText;
-                return;
-            }
+    // 2. Validación de reCAPTCHA
+    const recaptchaToken = grecaptcha.getResponse();
+    if (!recaptchaToken) {
+        alert(currentLang === 'en' ? "Please complete the reCAPTCHA." : "Por favor, completa el reCAPTCHA.");
+        return; 
+    }
 
-            const formData = {
-                fullName: document.getElementById('contact-name').value,
-                email: document.getElementById('contact-email').value,
-                phone: document.getElementById('contact-phone').value,
-                message: document.getElementById('contact-message').value,
-                recaptchaToken: recaptchaToken // <- Enviamos el token al backend
-            };
+    // 3. Activar estado de carga
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> ' + (currentLang === 'en' ? 'Sending...' : 'Enviando...');
 
-                    // ... dentro de handleContactSubmit ...
-        try {
-            const response = await fetch(`${BACKEND_URL}/api/contact`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
-            });
-            const result = await response.json();
-            if(result.success) {
-                alert(currentLang === 'en' ? "Thank you! Your message has been received." : "¡Gracias! Hemos recibido tu mensaje.");
-                event.target.reset();
-                grecaptcha.reset(); // Importante resetear el captcha tras enviar
-            } else {
-                alert(currentLang === 'en' ? "Error: " + result.error : "Error: " + result.error);
-            }
-        } catch (error) { 
-            alert(currentLang === 'en' ? "Error sending message." : "Error enviando el mensaje."); 
-        } 
+    try {
+        const formData = {
+            fullName: document.getElementById('contact-name').value,
+            email: document.getElementById('contact-email').value,
+            phone: document.getElementById('contact-phone').value,
+            message: document.getElementById('contact-message').value,
+            recaptchaToken: recaptchaToken 
+        };
 
+        const response = await fetch(`${BACKEND_URL}/api/contact`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+
+        // Verificamos si la respuesta es válida antes de intentar leer el JSON
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        
+        const result = await response.json();
+
+        if(result.success) {
+            alert(currentLang === 'en' ? "Thank you! Your message has been received." : "¡Gracias! Hemos recibido tu mensaje.");
+            event.target.reset();
+            grecaptcha.reset(); 
+        } else {
+            alert(currentLang === 'en' ? "Error: " + result.error : "Error: " + result.error);
         }
+    } catch (error) { 
+        console.error("Error en el envío:", error);
+        alert(currentLang === 'en' ? "Error sending message. Please try again later." : "Error enviando el mensaje. Por favor intenta más tarde."); 
+    } finally {
+        // EL PARCHE PROFESIONAL: 
+        // Esto se ejecuta SIEMPRE (si sale bien o si sale mal)
+        // Apaga el spinner y reactiva el botón
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    }
+}
     </script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-FF7Q54SK5L"></script>
     <script>
