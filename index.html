@@ -253,6 +253,10 @@
         return; 
     }
 
+    // --- CONFIGURACIÓN DEL CRONÓMETRO (TIMEOUT) ---
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 12000); // 12 segundos de espera máxima
+
     // 3. Activar estado de carga
     btn.disabled = true;
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> ' + (currentLang === 'en' ? 'Sending...' : 'Enviando...');
@@ -269,10 +273,12 @@
         const response = await fetch(`${BACKEND_URL}/api/contact`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(formData)
+            body: JSON.stringify(formData),
+            signal: controller.signal // Conectamos el cronómetro a la petición
         });
 
-        // Verificamos si la respuesta es válida antes de intentar leer el JSON
+        clearTimeout(timeoutId); // Si responde antes de los 12s, cancelamos el cronómetro
+
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         
         const result = await response.json();
@@ -285,12 +291,14 @@
             alert(currentLang === 'en' ? "Error: " + result.error : "Error: " + result.error);
         }
     } catch (error) { 
-        console.error("Error en el envío:", error);
-        alert(currentLang === 'en' ? "Error sending message. Please try again later." : "Error enviando el mensaje. Por favor intenta más tarde."); 
+        if (error.name === 'AbortError') {
+            alert(currentLang === 'en' ? "The server is taking too long to respond. Please try again." : "El servidor está tardando demasiado en responder. Por favor, intenta de nuevo.");
+        } else {
+            console.error("Error en el envío:", error);
+            alert(currentLang === 'en' ? "Error sending message. Please try again later." : "Error enviando el mensaje. Por favor intenta más tarde."); 
+        }
     } finally {
-        // EL PARCHE PROFESIONAL: 
-        // Esto se ejecuta SIEMPRE (si sale bien o si sale mal)
-        // Apaga el spinner y reactiva el botón
+        // Pase lo que pase (éxito, error o timeout), liberamos el botón
         btn.disabled = false;
         btn.innerHTML = originalText;
     }
